@@ -1,118 +1,3 @@
-import java.util.Arrays; 
-
-CA ca;
-String typing = "";
-String saved = "";
-int[] ignore;
-
-void setup() {
-  size(1200, 1200);
-  int[] starting_rule = {0,0,0,0,0,0,0,0};
-  ca = new CA(starting_rule);
-  ca.neighbors = 3;
-  background(0);
-  String[] ignore_temp = loadStrings("data.txt");
-}
-
-void draw() {
-  ca.render();
-  ca.generate();
-  fill(0);
-  draw_text();
-  
-}
-
-String decToBinary(int n, int size) {
-    int[] binaryNum = new int[size];
-
-    int i = 0;
-    while (n > 0) {
-      binaryNum[i] = n % 2;
-      n = n / 2;
-      i++;
-      System.out.println(binaryNum[i]);
-    }
-    return Arrays.toString(binaryNum);
-}
-
-void keyPressed() {
-  if (key == '\n' && typing.length() <= 3) {
-    background(0);
-    saved = typing;
-    typing = ""; 
-    String r = decToBinary(Integer.parseInt(saved), 8);
-    for (int i = 0; i < r.length(); i++) {
-       ca.rule[i] = r.charAt(i)-'0';
-    }
-    ca.start_over();
-  } else if (key == '\n' && typing.length() <= 10) {
-    background(0);
-    saved = typing;
-    typing = ""; 
-    for (int i = 0; i < saved.length(); i++) {
-       ca.rule[i] = saved.charAt(i)-'0';
-    }
-    ca.start_over();
-  } else if (key == 'c') {
-    ca.neighbors = 3;
-    background(0);
-    ca.start_over();
-    ca.rule = new int[8];
-    for (int i = 0; i < ca.rule.length; i++) {
-      ca.rule[i] = floor(random(2));
-    }
-  } else if (key == 'b') {
-    ca.neighbors = 5;
-    background(0);
-    ca.start_over();
-    ca.rule = new int[32];
-    for (int i = 0; i < ca.rule.length; i++) {
-      ca.rule[i] = floor(random(2));
-    }
-  } else if (typing.length() < 3 && Character.isDigit(key) && ca.neighbors == 3) {
-    typing = typing + key; 
-  } else if (typing.length() < 10 && Character.isDigit(key) && ca.neighbors == 5) {
-    typing = typing + key; 
-  } else if (key == 'r') {
-    ca.rand = 0; 
-    background(0);
-    ca.start_over();
-  } else if (key == 'h') {
-    ca.rand = 1; 
-    background(0);
-    ca.start_over();
-  }
-}
-
-void draw_text() {
-  String[] str_rule = new String[8];
-  if (ca.neighbors == 3) {
-    str_rule = new String[8];
-    for (int i = 0; i < ca.rule.length; i++) {
-        str_rule[i] = str(ca.rule[i]);
-    }
-  } else if (ca.neighbors == 5) {
-    str_rule = new String[32];
-    for (int i = 0; i < ca.rule.length; i++) {
-        str_rule[i] = str(ca.rule[i]);
-    }
-  }
-  String t = join(str_rule, "");
-  textSize(20);
-  fill(255);
-  text(t, 0, 18); 
-  text("user input: " + typing, width / 3 * 2 - 150, 18);
-  text(ca.neighbors + " " + "neighbors", width / 2 - 100, 18);
-}
-
-void mousePressed() {
-   background(0);
-   ca.start_over();
-   for (int i = 0; i < ca.rule.length; i++) {
-     ca.rule[i] = floor(random(2));
-   }
-}
-
 class CA {
   
   int[] cells;
@@ -125,7 +10,7 @@ class CA {
   CA(int[] r) {
    rule = r; 
    resolution = 1;
-   cells = new int[width/resolution];
+   cells = new int[width/resolution - 57];
    if (rand == 0) {
      for (int i = 0; i < cells.length; i++) {
         cells[i] = floor(random(2)); 
@@ -150,6 +35,7 @@ class CA {
      cells[cells.length / 2] = 0;
    }
    generation = 0;
+   background(0);
   }
   
   void render() {
@@ -160,7 +46,7 @@ class CA {
          fill(255);
        }
        noStroke();
-       rect(i * resolution, generation * resolution + 23, resolution, resolution);
+       rect(i * resolution, generation * resolution + userTB.Y + 45, resolution, resolution);
     }
   }
   
