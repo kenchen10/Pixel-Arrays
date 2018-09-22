@@ -6,6 +6,8 @@ class CA {
   int resolution = 1;
   int neighbors;
   int rand = 0;
+  boolean is_i3 = false;
+  boolean is_i5 = false;
   
   CA(int[] r) {
    rule = r; 
