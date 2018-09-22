@@ -8,6 +8,21 @@ class CA {
   int rand = 0;
   boolean is_i3 = false;
   boolean is_i5 = false;
+  boolean is_search = false;
+  
+  CA() {
+    cells = new int[width/resolution - 54/resolution];
+   if (rand == 0) {
+     for (int i = 0; i < cells.length; i++) {
+        cells[i] = floor(random(2)); 
+     }
+   } else if (rand == 1) {
+     for (int i = 0; i < cells.length; i++) {
+        cells[i] = 1; 
+     }
+     cells[cells.length / 2] = 0;
+   }
+  }
   
   CA(int[] r) {
    rule = r; 
@@ -40,7 +55,7 @@ class CA {
   }
   
   void render() {
-    for (int i = 1; i < cells.length - 1; i++) {
+    for (int i = 0; i < cells.length; i++) {
        if (cells[i] == 1) {
          fill(0);
        } else {

@@ -7,8 +7,6 @@ String[] ignore_3;
 String[] ignore_5;
 
 CA ca;
-String typing = "";
-String saved = "";
 
 Rect rect_3;
 Rect rect_5;
@@ -17,6 +15,7 @@ Rect rect_h;
 Rect rect_n;
 Rect rect_i3;
 Rect rect_i5;
+Rect rect_i;
 ArrayList<Rect> rects = new ArrayList<Rect>();
 
 void startScreen(int remainingTimeMs){
@@ -53,7 +52,7 @@ void setup() {
    textboxes.add(tb2);
    int[] starting_rule = new int[8];
    for (int i = 0; i < 8; i++) {
-      starting_rule[i] = 0; 
+      starting_rule[i] = floor(random(2)); 
    }
    ca = new CA(starting_rule);
    ca.neighbors = 3;
@@ -64,18 +63,23 @@ void setup() {
    rect_n = new Rect(width - 50, userTB.Y + userTB.H + 210, 40, color(0), color(102), color(51), color(102), false);
    rect_i3 = new Rect(width - 50, userTB.Y + userTB.H + 310, 40, color(0), color(102), color(51), color(102), false);
    rect_i5 = new Rect(width - 50, userTB.Y + userTB.H + 360, 40, color(0), color(102), color(51), color(102), false);
+   rect_i = new Rect(width - 50, userTB.Y + userTB.H + 410, 40, color(0), color(102), color(51), color(102), false);
+   rects.add(rect_3);
+   rects.add(rect_5);
+   rects.add(rect_r);
+   rects.add(rect_h);
+   rects.add(rect_n);
+   rects.add(rect_i3);
+   rects.add(rect_i5);
+   rects.add(rect_i);
    background(0);
 }
 
 void draw() {   
    // LABELS
-   rect_3.update();
-   rect_5.update();
-   rect_r.update();
-   rect_h.update();
-   rect_n.update();
-   rect_i3.update();
-   rect_i5.update();
+   for (Rect r: rects) {
+     r.update();
+   }
    fill(250, 250, 250);
    
    // DRAW THE TEXTBOXES
@@ -86,14 +90,10 @@ void draw() {
    ca.render();
    ca.generate();
    fill(0);
+   for (Rect r: rects) {
+     r.draw_rect();
+   }
    draw_text();
-   rect_3.draw_rect();
-   rect_5.draw_rect();
-   rect_r.draw_rect();
-   rect_h.draw_rect();
-   rect_n.draw_rect();
-   rect_i3.draw_rect();
-   rect_i5.draw_rect();
 }
 
 void checkIgnore() {
@@ -104,9 +104,11 @@ void checkIgnore() {
           str = str + Integer.toString(ca.rule[j]);
        }
        if (str.equals(ignore_3[i]) && !ca.is_i3) {
-          for (int j = 0; j < ca.rule.length; j++) {
+          for (int j = 0; j < 8; j++) {
             ca.rule[j] = floor(random(2));
+            ca.start_over();
           }
+          return;
        }
    }
  } else if (ca.neighbors == 5) {
@@ -116,9 +118,11 @@ void checkIgnore() {
         str = str + Integer.toString(ca.rule[j]);
      }
      if (str.equals(ignore_5[i]) && !ca.is_i5) {
-        for (int j = 0; j < ca.rule.length; j++) {
+        for (int j = 0; j < 32; j++) {
           ca.rule[j] = floor(random(2));
+          ca.start_over();
         }
+        return;
      }
    }
  }
@@ -128,7 +132,41 @@ void mousePressed() {
    for (TEXTBOX t : textboxes) {
       t.PRESSED(mouseX, mouseY);
    }
-   if (rect_i5.rectOver && ca.rule.length == 32 && ca.is_i5) { 
+   if (rect_i.rectOver && ca.rule.length == 32 && !ca.is_i5 && !ca.is_i3) { 
+    String str = "";
+    for (int j=0;j<ca.rule.length;j++) {
+        str = str + Integer.toString(ca.rule[j]);
+    }
+    String[] temp = new String[ignore_5.length + 1];
+    for (int i = 0; i < ignore_5.length; i++) {
+       temp[i] = ignore_5[i];
+    }
+    temp[temp.length - 1] = str;
+    ignore_5 = new String[temp.length];
+    ignore_5 = temp;
+    for (int i = 0; i < ca.rule.length; i++) {
+        ca.rule[i] = floor(random(2));
+    }
+    saveStrings("data_5.txt", ignore_5);
+    ca.start_over();
+  } else if (rect_i.rectOver && ca.rule.length == 8 && !ca.is_i5 && !ca.is_i3) { 
+    String str = "";
+    for (int j=0;j<ca.rule.length;j++) {
+        str = str + Integer.toString(ca.rule[j]);
+    }
+    String[] temp = new String[ignore_3.length + 1];
+    for (int i = 0; i < ignore_3.length; i++) {
+       temp[i] = ignore_3[i];
+    }
+    temp[temp.length - 1] = str;
+    ignore_3 = new String[temp.length];
+    ignore_3 = temp;
+    for (int i = 0; i < ca.rule.length; i++) {
+        ca.rule[i] = floor(random(2));
+    }
+    saveStrings("data_3.txt", ignore_3);
+    ca.start_over();
+  } else if (rect_i5.rectOver && ca.rule.length == 32 && ca.is_i5) { 
     rect_i5.currentColor = rect_i5.rectColor;
     ca.is_i5 = false;
     for (int i = 0; i < ca.rule.length; i++) {
@@ -138,6 +176,7 @@ void mousePressed() {
   } else if (rect_i5.rectOver) { 
     rect_i5.currentColor = rect_i5.rectColor;
     ca.is_i5 = true;
+    ca.is_i3 = false;
     ca.rule = new int[32];
     String temp = ignore_5[floor(random(ignore_5.length))];
     for (int i = 0; i < temp.length(); i++) {
@@ -155,6 +194,7 @@ void mousePressed() {
   } else if (rect_i3.rectOver) { 
     rect_i3.currentColor = rect_i3.rectColor;
     ca.is_i3 = true;
+    ca.is_i5 = false;
     ca.rule = new int[8];
     String temp = ignore_3[floor(random(ignore_3.length))];
     for (int i = 0; i < temp.length(); i++) {
@@ -194,6 +234,12 @@ void mousePressed() {
     ca.start_over();
   } else if (rect_n.rectOver && ca.is_i3) {
     String temp = ignore_3[floor(random(ignore_3.length))];
+    for (int i = 0; i < temp.length(); i++) {
+      ca.rule[i] = temp.charAt(i) - '0';
+    }
+    ca.start_over();
+  } else if (rect_n.rectOver && ca.is_i5) {
+    String temp = ignore_5[floor(random(ignore_5.length))];
     for (int i = 0; i < temp.length(); i++) {
       ca.rule[i] = temp.charAt(i) - '0';
     }
@@ -248,8 +294,6 @@ void keyPressed() {
     tb2.TextLength = 0;
   } else if (key == '\n' && userTB.Text.length() == 8) {
     background(0);
-    saved = typing;
-    typing = ""; 
     for (int i = 0; i < userTB.Text.length(); i++) {
        ca.rule[i] = userTB.Text.charAt(i)-'0';
     }
@@ -259,8 +303,6 @@ void keyPressed() {
     ca.start_over();
   } else if (key == '\n' && userTB.Text.length() == 32) {
     background(0);
-    saved = typing;
-    typing = ""; 
     ca.is_i3 = false;
     for (int i = 0; i < userTB.Text.length(); i++) {
        ca.rule[i] = userTB.Text.charAt(i)-'0';
@@ -268,10 +310,6 @@ void keyPressed() {
     userTB.Text = "";
     userTB.TextLength = 0;
     ca.start_over();
-  } else if (typing.length() < 8 && (key == '1' || key == '0') && ca.neighbors == 3) {
-    typing = typing + key; 
-  } else if (typing.length() < 32 && (key == '1' || key == '0') && ca.neighbors == 5) {
-    typing = typing + key; 
   } 
 }
 
@@ -282,7 +320,7 @@ void draw_text() {
     for (int i = 0; i < ca.rule.length; i++) {
         str_rule[i] = str(ca.rule[i]);
     }
-  } if (ca.neighbors == 5) {
+  } else if (ca.neighbors == 5) {
     str_rule = new String[32];
     for (int i = 0; i < ca.rule.length; i++) {
         str_rule[i] = str(ca.rule[i]);
@@ -291,10 +329,18 @@ void draw_text() {
     textSize(20);
     fill(255);
     text("Random Rule", width / 4 + 50, userTB.Y + 24);
-  } if (ca.rand == 1) {
+  } else if (ca.rand == 1) {
     textSize(20);
     fill(255);
     text("Non-random Rule", width / 4 + 50, userTB.Y + 24);
+  } if (ca.is_i3 == true) {
+    textSize(20);
+    fill(255);
+    text("Ignore 3", width / 4 + 300, userTB.Y + 24);
+  } else if (ca.is_i5 == true) {
+    textSize(20);
+    fill(255);
+    text("Ignore 5", width / 4 + 300, userTB.Y + 24);
   } 
   String t = join(str_rule, "");
   textSize(20);
@@ -308,4 +354,5 @@ void draw_text() {
   text("n", rect_n.rectX + rect_n.rectSize/2 - 7, rect_n.rectY+rect_n.rectSize/2 + 5); 
   text("i3", rect_i3.rectX + rect_i3.rectSize/2 - 7, rect_i3.rectY+rect_i3.rectSize/2 + 5); 
   text("i5", rect_i5.rectX + rect_i5.rectSize/2 - 7, rect_i5.rectY+rect_i5.rectSize/2 + 5); 
+  text("i", rect_i.rectX + rect_i.rectSize/2 - 7, rect_i.rectY+rect_i.rectSize/2 + 5); 
 }
