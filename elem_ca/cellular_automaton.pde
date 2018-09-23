@@ -11,7 +11,7 @@ class CA {
   boolean is_search = false;
   
   CA() {
-    cells = new int[width/resolution - 54/resolution];
+    cells = new int[width/resolution];
    if (rand == 0) {
      for (int i = 0; i < cells.length; i++) {
         cells[i] = floor(random(2)); 
@@ -26,7 +26,7 @@ class CA {
   
   CA(int[] r) {
    rule = r; 
-   cells = new int[width/resolution - 54/resolution];
+   cells = new int[width/resolution];
    if (rand == 0) {
      for (int i = 0; i < cells.length; i++) {
         cells[i] = floor(random(2)); 
@@ -67,7 +67,7 @@ class CA {
   }
   
   void generate() {
-    int[] next = new int[width/resolution-54/resolution];
+    int[] next = new int[width/resolution];
     if (neighbors == 3) {
       for (int i = 0; i < cells.length; i++) {
         int left = cells[(((i-1 % cells.length) + cells.length) % cells.length)];

@@ -3,9 +3,9 @@ public class TEXTBOX {
    public int TEXTSIZE = 20;
    
    // COLORS
-   public color Background = color(140, 140, 140);
-   public color Foreground = color(0, 0, 0);
-   public color BackgroundSelected = color(160, 160, 160);
+   public color Background = color(87);
+   public color Foreground = color(255);
+   public color BackgroundSelected = color(115);
    public color Border = color(30, 30, 30);
    
    public boolean BorderEnable = false;
@@ -45,7 +45,7 @@ public class TEXTBOX {
       // DRAWING THE TEXT ITSELF
       fill(Foreground);
       textSize(TEXTSIZE);
-      text(Text, X + (textWidth("a") / 2), Y + TEXTSIZE);
+      text(Text, X + (textWidth("a") / 2), Y + TEXTSIZE/.9);
    }
    
    // IF THE KEYCODE IS ENTER RETURN 1

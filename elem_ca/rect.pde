@@ -1,15 +1,18 @@
 class Rect {
   int rectX, rectY;      // Position of square button
-  int rectSize = 50;     // Diameter of rect
+  int rectW;     // Diameter of rect
+  int rectH;     // Diameter of rect
   color rectColor, baseColor;
   color rectHighlight;
   color currentColor;
   boolean rectOver = false;
+  boolean ignore = false;
   
-  Rect (int x, int y, int size, color c, color b, color h, color curr, boolean over) {
+  Rect (int x, int y, int w, int ht, color c, color b, color h, color curr, boolean over) {
     rectX = x;
     rectY = y;
-    rectSize = size;
+    rectW = w;
+    rectH = ht;
     rectColor = c;
     baseColor = b;
     rectHighlight = h;
@@ -18,9 +21,10 @@ class Rect {
   }
   
   void draw_rect() {
-    noFill();
-    stroke(255);
-    rect(rectX, rectY, rectSize, rectSize); 
+    currentColor = rectColor;
+    fill(currentColor);
+    noStroke();
+    rect(rectX, rectY, rectW, rectH); 
     }
     
   boolean overRect(int x, int y, int w, int h)  {
@@ -33,9 +37,11 @@ class Rect {
   }
   
   void update() {
-    if (overRect(rectX, rectY, rectSize, rectSize) ) {
+    if (overRect(rectX, rectY, rectW, rectH) && !ignore) {
+      rectColor = rectHighlight;
       rectOver = true;
     } else {
+      rectColor = baseColor;
       rectOver = false;
     }
   }
