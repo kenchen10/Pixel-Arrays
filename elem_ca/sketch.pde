@@ -16,6 +16,7 @@ Rect rect_i3;
 Rect rect_i5;
 Rect rect_i;
 Rect style;
+Rect style2;
 
 ArrayList<Rect> rects = new ArrayList<Rect>();
 
@@ -43,7 +44,7 @@ void setup() {
    userTB.H = 35;
    tb2 = new TEXTBOX();
    tb2.X = width - 50;
-   tb2.Y = userTB.Y + userTB.H + 420;
+   tb2.Y = userTB.Y + userTB.H + 450;
    tb2.W = 40;
    tb2.H = 40;
    
@@ -60,12 +61,14 @@ void setup() {
    rect_r = new Rect(width - 50, userTB.Y + userTB.H + 120, 40, 40, color(0), color(87), color(51), color(102), false);
    rect_h = new Rect(width - 50, userTB.Y + userTB.H + 170, 40, 40, color(0), color(87), color(51), color(102), false);
    rect_n = new Rect(width - 50, userTB.Y + userTB.H + 220, 40, 40, color(0), color(87), color(51), color(102), false);
-   rect_i3 = new Rect(width - 50, userTB.Y + userTB.H + 270, 40, 40, color(0), color(87), color(51), color(102), false);
-   rect_i5 = new Rect(width - 50, userTB.Y + userTB.H + 320, 40, 40, color(0), color(87), color(51), color(102), false);
-   rect_i = new Rect(width - 50, userTB.Y + userTB.H + 370, 40, 40, color(0), color(87), color(51), color(102), false);
-   style = new Rect(width - 50, userTB.Y + userTB.H + 20, 40, 390, color(0), color(87), color(51), color(102), false);
+   rect_i3 = new Rect(width - 50, userTB.Y + userTB.H + 280, 40, 40, color(0), color(87), color(51), color(102), false);
+   rect_i5 = new Rect(width - 50, userTB.Y + userTB.H + 330, 40, 40, color(0), color(87), color(51), color(102), false);
+   rect_i = new Rect(width - 50, userTB.Y + userTB.H + 390, 40, 40, color(0), color(87), color(51), color(102), false);
+   style = new Rect(width - 50, userTB.Y + userTB.H + 20, 40, 240, color(0), color(87), color(51), color(102), false);
+   style2 = new Rect(width - 50, userTB.Y + userTB.H + 280, 40, 70, color(0), color(87), color(51), color(102), false);
    style.ignore = true;
    rects.add(style);
+   rects.add(style2);
    rects.add(rect_3);
    rects.add(rect_5);
    rects.add(rect_r);

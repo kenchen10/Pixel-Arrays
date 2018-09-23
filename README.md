@@ -1,2 +1,2 @@
 # Pixel-Arrays
-A tool written in Processing that is used to analyze cellular automata.
+A tool written in Processing for analyzing cellular automata. This program can display cellular automata with 3 and 5 neighbors.
