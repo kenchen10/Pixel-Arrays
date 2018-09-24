@@ -24,7 +24,7 @@ class Rect {
     currentColor = rectColor;
     fill(currentColor);
     noStroke();
-    rect(rectX, rectY, rectW, rectH); 
+    rect(rectX, rectY, rectW, rectH, 5); 
     }
     
   boolean overRect(int x, int y, int w, int h)  {

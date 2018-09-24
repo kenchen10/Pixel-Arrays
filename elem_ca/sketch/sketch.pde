@@ -1,9 +1,17 @@
 import java.util.Arrays; 
+import java.lang.Integer;
+import java.math.BigInteger;
+
 ArrayList<TEXTBOX> textboxes = new ArrayList<TEXTBOX>();
 TEXTBOX userTB;
 TEXTBOX tb2;
+int counter = 0;
+
 String[] ignore_3;
 String[] ignore_5;
+
+ArrayList<String> i3_alist;
+ArrayList<String> i5_alist;
 
 CA ca;
 
@@ -15,6 +23,7 @@ Rect rect_n;
 Rect rect_i3;
 Rect rect_i5;
 Rect rect_i;
+
 Rect style;
 Rect style2;
 
@@ -24,7 +33,7 @@ void startScreen(){
   background(0);
   textSize(100);
   fill(255);
-  textAlign(CENTER,CENTER);
+  textAlign(CENTER, CENTER);
   text("Kenny Chen", width/2, height/2);
 }
 
@@ -37,6 +46,8 @@ void setup() {
    // CONFIGURED USING THE GLOBAL VARS
    ignore_3 = loadStrings("data_3.txt");
    ignore_5 = loadStrings("data_5.txt");
+   i3_alist = new ArrayList<String>(Arrays.asList(ignore_3));
+   i5_alist = new ArrayList<String>(Arrays.asList(ignore_5));
    userTB = new TEXTBOX();
    userTB.X = width - 460;
    userTB.Y = 10;
@@ -82,72 +93,98 @@ void setup() {
 
 void draw() {   
    // LABELS
-     for (Rect r: rects) {
-       r.update();
-     }
-     fill(250, 250, 250);
-     
-     // DRAW THE TEXTBOXES
-     userTB.DRAW();
-     tb2.DRAW();
-     tb2.maxLen = 1;
-     checkIgnore();
-     ca.render();
-     ca.generate();
-     fill(0);
-     for (Rect r: rects) {
-       r.draw_rect();
-     }
-     draw_text();
+   for (Rect r: rects) {
+     r.update();
+   }
+   fill(250, 250, 250);
+   
+   // DRAW THE TEXTBOXES
+   userTB.DRAW();
+   tb2.DRAW();
+   tb2.maxLen = 1;
+   checkIgnore();
+   ca.render();
+   ca.generate();
+   fill(0);
+   for (Rect r: rects) {
+     r.draw_rect();
+   }
+   draw_text();
 }
 
 void checkIgnore() {
   if (!ca.is_search) {
-    if (ca.neighbors == 3) {
-      for (int i = 0; i < ignore_3.length; i++) {
-         String str = "";
+    if (ca.neighbors == 3 && !ca.is_i3) {
+      String str = "";
          for(int j=0;j<ca.rule.length;j++) {
             str = str + Integer.toString(ca.rule[j]);
          }
-         if (str.equals(ignore_3[i]) && !ca.is_i3) {
-            for (int j = 0; j < 8; j++) {
+      if (i3_alist.contains(str)) {
+        for (int j = 0; j < 8; j++) {
               ca.rule[j] = floor(random(2));
               ca.start_over();
-            }
-            return;
+        }
+      }
+   } else if (ca.neighbors == 5 && !ca.is_i5) {
+     String str = "";
+         for(int j=0;j<ca.rule.length;j++) {
+            str = str + Integer.toString(ca.rule[j]);
          }
-     }
-   } else if (ca.neighbors == 5) {
-     for (int i = 0; i < ignore_5.length; i++) {
-       String str = "";
-       for(int j=0;j<ca.rule.length;j++) {
-          str = str + Integer.toString(ca.rule[j]);
-       }
-       if (str.equals(ignore_5[i]) && !ca.is_i5) {
-          for (int j = 0; j < 32; j++) {
-            ca.rule[j] = floor(random(2));
-            ca.start_over();
-          }
-          return;
-       }
-     }
-   }
+      if (i5_alist.contains(str)) {
+        for (int j = 0; j < 32; j++) {
+              ca.rule[j] = floor(random(2));
+              ca.start_over();
+        }
+      }
+    }
   }
 }
 
 void mousePressed() {
    for (TEXTBOX t : textboxes) {
-      t.PRESSED(mouseX, mouseY);
+       t.PRESSED(mouseX, mouseY);
    }
-   if (rect_i.rectOver && ca.rule.length == 32 && !ca.is_i5 && !ca.is_i3) { 
-     ca.is_search = false;
+   if (rect_i.rectOver && ca.rule.length == 32 && ca.is_i5) { 
+    ca.is_search = false;
+    String str = "";
+    for (int j=0;j<ca.rule.length;j++) {
+        str = str + Integer.toString(ca.rule[j]);
+    }
+    i5_alist.remove(str);
+    Object[] o = i5_alist.toArray();
+    String[] temp = Arrays.copyOf(o, o.length, String[].class);
+    ignore_5 = temp;
+    saveStrings("data_5.txt", ignore_5);
+    String t = ignore_5[floor(random(ignore_5.length))];
+    for (int i = 0; i < ca.rule.length; i++) {
+        ca.rule[i] = t.charAt(i)-'0';
+    }
+    ca.start_over();
+  } else if (rect_i.rectOver && ca.rule.length == 8 && ca.is_i3) { 
+    ca.is_search = false;
+    String str = "";
+    for (int j=0;j<ca.rule.length;j++) {
+        str = str + Integer.toString(ca.rule[j]);
+    }
+    i3_alist.remove(str);
+    Object[] o = i3_alist.toArray();
+    String[] temp = Arrays.copyOf(o, o.length, String[].class);
+    ignore_3 = temp;
+    saveStrings("data_3.txt", ignore_3);
+    String t = ignore_3[floor(random(ignore_3.length))];
+    for (int i = 0; i < ca.rule.length; i++) {
+        ca.rule[i] = t.charAt(i)-'0';
+    }
+    ca.start_over();
+  } else if (rect_i.rectOver && ca.rule.length == 32 && !ca.is_i5 && !ca.is_i3) { 
+    ca.is_search = false;
     String str = "";
     for (int j=0;j<ca.rule.length;j++) {
         str = str + Integer.toString(ca.rule[j]);
     }
     String[] temp = new String[ignore_5.length + 1];
     for (int i = 0; i < ignore_5.length; i++) {
-       temp[i] = ignore_5[i];
+        temp[i] = ignore_5[i];
     }
     temp[temp.length - 1] = str;
     ignore_5 = new String[temp.length];
@@ -165,7 +202,7 @@ void mousePressed() {
     }
     String[] temp = new String[ignore_3.length + 1];
     for (int i = 0; i < ignore_3.length; i++) {
-       temp[i] = ignore_3[i];
+        temp[i] = ignore_3[i];
     }
     temp[temp.length - 1] = str;
     ignore_3 = new String[temp.length];
@@ -191,7 +228,7 @@ void mousePressed() {
     ca.rule = new int[32];
     String temp = ignore_5[floor(random(ignore_5.length))];
     for (int i = 0; i < temp.length(); i++) {
-      ca.rule[i] = temp.charAt(i) - '0';
+        ca.rule[i] = temp.charAt(i) - '0';
     }
     ca.neighbors = 5;
     ca.start_over();
@@ -211,31 +248,35 @@ void mousePressed() {
     ca.rule = new int[8];
     String temp = ignore_3[floor(random(ignore_3.length))];
     for (int i = 0; i < temp.length(); i++) {
-      ca.rule[i] = temp.charAt(i) - '0';
+        ca.rule[i] = temp.charAt(i) - '0';
     }
     ca.neighbors = 3;
     ca.start_over();
   } else if (rect_3.rectOver) {
     ca.is_search = false;
+    ca.is_i3 = false;
+    ca.is_i5 = false;
     rect_3.currentColor = rect_3.rectColor;
     ca.neighbors = 3;
-    userTB.maxLen = 7;
+    userTB.maxLen = 1;
     if (ca.rule.length != 8) { 
       ca.rule = new int[8];
       for (int i = 0; i < ca.rule.length; i++) {
-        ca.rule[i] = floor(random(2));
+          ca.rule[i] = floor(random(2));
       }
     }
     ca.start_over();
   } else if (rect_5.rectOver) {
+    ca.is_i3 = false;
+    ca.is_i5 = false;
     ca.is_search = false;
     rect_5.currentColor = rect_5.rectColor;
     ca.neighbors = 5;
-    userTB.maxLen = 31;
+    userTB.maxLen = 7;
     if (ca.rule.length != 32) {
       ca.rule = new int[32];
       for (int i = 0; i < ca.rule.length; i++) {
-        ca.rule[i] = floor(random(2));
+          ca.rule[i] = floor(random(2));
       }
     }
     ca.start_over();
@@ -251,7 +292,7 @@ void mousePressed() {
     ca.is_search = false;
     String temp = ignore_3[floor(random(ignore_3.length))];
     for (int i = 0; i < temp.length(); i++) {
-      ca.rule[i] = temp.charAt(i) - '0';
+        ca.rule[i] = temp.charAt(i) - '0';
     }
     ca.start_over();
   } else if (rect_n.rectOver && ca.is_i5) {
@@ -271,19 +312,6 @@ void mousePressed() {
   }
 }
 
-String decToBinary(int n, int size) {
-    int[] binaryNum = new int[size];
-
-    int i = 0;
-    while (n > 0) {
-      binaryNum[i] = n % 2;
-      n = n / 2;
-      i++;
-      System.out.println(binaryNum[i]);
-    }
-    return Arrays.toString(binaryNum);
-}
-
 void keyPressed() {
   for (TEXTBOX t : textboxes) {
       t.KEYPRESSED(key, (int)keyCode);
@@ -296,22 +324,44 @@ void keyPressed() {
     ca.is_search = false;
     tb2.Text = "";
     tb2.TextLength = 0;
-  } else if (key == '\n' && userTB.Text.length() == 8) {
+  } else if (key == '\n' && userTB.Text.length() == 2 && (userTB.Text.toUpperCase().matches("[A-F0-9]+"))) {
     background(0);
-    for (int i = 0; i < userTB.Text.length(); i++) {
-       ca.rule[i] = userTB.Text.charAt(i)-'0';
+    String temp = new BigInteger(userTB.Text, 16).toString(2);
+    Integer length = temp.length();
+    if (length < 8) {
+        for (int i = 0; i < 8 - length; i++) {
+            temp = "0" + temp;
+        }
+    }
+    int[] r = new int[8];
+    for (int i = 0; i < 8; i++) {
+       r[i] = temp.charAt(i) - '0';
+    }
+    for (int i = 0; i < ca.rule.length; i++) {
+       ca.rule[i] = r[i];
     }
     ca.is_i3 = false;
     ca.is_search = true;
     userTB.Text = "";
     userTB.TextLength = 0;
     ca.start_over();
-  } else if (key == '\n' && userTB.Text.length() == 32) {
+  } else if (key == '\n' && userTB.Text.length() == 8 && (userTB.Text.toUpperCase().matches("[A-F0-9]+"))) {
     background(0);
     ca.is_search = true;
     ca.is_i3 = false;
-    for (int i = 0; i < userTB.Text.length(); i++) {
-       ca.rule[i] = userTB.Text.charAt(i)-'0';
+    String temp = new BigInteger(userTB.Text, 16).toString(2);
+    Integer length = temp.length();
+    if (length < 32) {
+        for (int i = 0; i < 32 - length; i++) {
+            temp = "0" + temp;
+        }
+    }
+    int[] r = new int[32];
+    for (int i = 0; i < 32; i++) {
+       r[i] = temp.charAt(i) -'0';
+    }
+    for (int i = 0; i < ca.rule.length; i++) {
+       ca.rule[i] = r[i];
     }
     userTB.Text = "";
     userTB.TextLength = 0;
@@ -334,24 +384,26 @@ void draw_text() {
   } if (ca.rand == 0) {
     textSize(20);
     fill(255);
-    text("Random Rule", width / 4 + 50, userTB.Y + 24);
+    text("Random Rule", width / 4 + 160, userTB.Y + 24);
   } else if (ca.rand == 1) {
     textSize(20);
     fill(255);
-    text("Non-random Rule", width / 4 + 50, userTB.Y + 24);
+    text("Non-random Rule", width / 4 + 160, userTB.Y + 24);
   } if (ca.is_i3 == true) {
     textSize(20);
     fill(255);
-    text("Ignore 3", width / 4 + 300, userTB.Y + 24);
+    text("Ignore 3", width / 4 + 350, userTB.Y + 24);
   } else if (ca.is_i5 == true) {
     textSize(20);
     fill(255);
-    text("Ignore 5", width / 4 + 300, userTB.Y + 24);
+    text("Ignore 5", width / 4 + 350, userTB.Y + 24);
   } 
   String t = join(str_rule, "");
+  t = t.replaceAll("....", "$0 ");
   textSize(20);
   fill(255);
   text("Rule: " + t, 20, userTB.Y + 24); 
+  text("Hex Input: ", width - 570, userTB.Y + 24); 
   text(ca.neighbors + " Neighbors", width / 2, userTB.Y + 24);
   text("3", rect_3.rectX + rect_3.rectW/2 - 7, rect_3.rectY+rect_3.rectH/2 + 5); 
   text("5", rect_5.rectX + rect_5.rectW/2 - 7, rect_5.rectY+rect_5.rectH/2 + 5); 

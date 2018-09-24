@@ -17,10 +17,17 @@ class CA {
         cells[i] = floor(random(2)); 
      }
    } else if (rand == 1) {
+     //for (int i = 0; i < cells.length; i++) {
+     //  if (i % 2 == 0) {
+     //   cells[i] = 1; 
+     //  } else {
+     //    cells[i] = 0;
+     //  }
+     //}
      for (int i = 0; i < cells.length; i++) {
-        cells[i] = 1; 
+       cells[i] = 0;
      }
-     cells[cells.length / 2] = 0;
+     cells[cells.length/2] = 1;
    }
   }
   
@@ -32,10 +39,17 @@ class CA {
         cells[i] = floor(random(2)); 
      }
    } else if (rand == 1) {
+     //for (int i = 0; i < cells.length; i++) {
+     //  if (i % 2 == 0) {
+     //   cells[i] = 1; 
+     //  } else {
+     //    cells[i] = 0;
+     //  }
+     //}
      for (int i = 0; i < cells.length; i++) {
-        cells[i] = 1; 
+       cells[i] = 0;
      }
-     cells[cells.length / 2] = 0;
+     cells[cells.length/2] = 1;
    }
   }
   
@@ -45,10 +59,17 @@ class CA {
         cells[i] = floor(random(2)); 
      }
    } else if (rand == 1) {
+     //for (int i = 0; i < cells.length; i++) {
+     //  if (i % 2 == 0) {
+     //   cells[i] = 1; 
+     //  } else {
+     //    cells[i] = 0;
+     //  }
+     //}
      for (int i = 0; i < cells.length; i++) {
-        cells[i] = 1; 
+       cells[i] = 0;
      }
-     cells[cells.length / 2] = 0;
+     cells[cells.length/2] = 1;
    }
    generation = 0;
    background(0);

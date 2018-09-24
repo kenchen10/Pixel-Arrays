@@ -13,7 +13,7 @@ public class TEXTBOX {
    
    public String Text = "";
    public int TextLength = 0;
-   public int maxLen = 7;
+   public int maxLen = 1;
 
    private boolean selected = false;
    
@@ -40,7 +40,7 @@ public class TEXTBOX {
          noStroke();
       }
       
-      rect(X, Y, W, H);
+      rect(X, Y, W, H, 5);
       
       // DRAWING THE TEXT ITSELF
       fill(Foreground);
