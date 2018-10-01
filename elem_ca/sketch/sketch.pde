@@ -11,10 +11,15 @@ int counter = 0;
 String[] ignore_3;
 String[] no_i3;
 String[] ignore_5;
+String[] lines;
+int[] line = new int[60];
+String[] lines5;
 
 ArrayList<String> i3_alist;
 ArrayList<String> no_i3_alist;
 ArrayList<String> i5_alist;
+ArrayList<String> lines_alist;
+ArrayList<String> lines5_alist;
 
 CA ca;
 
@@ -55,8 +60,12 @@ void setup() {
    // CONFIGURED USING THE GLOBAL VARS
    ignore_3 = loadStrings("data_3.txt");
    ignore_5 = loadStrings("data_5.txt");
+   lines = loadStrings("lines.txt");
+   lines5 = loadStrings("lines5.txt");
    no_i3 = loadStrings("no_i.txt");
    i3_alist = new ArrayList<String>(Arrays.asList(ignore_3));
+   lines_alist = new ArrayList<String>(Arrays.asList(lines));
+   lines5_alist = new ArrayList<String>(Arrays.asList(lines5));
    i5_alist = new ArrayList<String>(Arrays.asList(ignore_5));
    no_i3_alist = new ArrayList<String>(Arrays.asList(no_i3));
    userTB = new TEXTBOX();
@@ -125,6 +134,11 @@ void draw() {
    userTB.DRAW();
    tb2.DRAW();
    tb2.maxLen = 1;
+   if (ca.neighbors == 3) {
+     checkLine3();
+   } else if (ca.neighbors == 5) {
+     checkLine5();
+   }
    checkIgnore();
    ca.render();
    ca.generate();
@@ -133,6 +147,52 @@ void draw() {
      r.draw_rect();
    }
    draw_text();
+}
+
+void checkLine3() {
+  if (ca.generation < 80 && ca.generation > 20) {
+    line[ca.generation - 21] = ca.cells[5];
+  }
+  if (ca.generation > 80 && ca.is_line == false) {
+    for (int i = 1; i < line.length; i++) {
+      if (line[i-1] != line[i]) {
+        return;
+      }
+    }
+    String str = "";
+         for(int j=0;j<ca.rule.length;j++) {
+            str = str + Integer.toString(ca.rule[j]);
+         }
+    lines_alist.add(str);
+    Object[] o = lines_alist.toArray();
+    String[] temp = Arrays.copyOf(o, o.length, String[].class);
+    lines = temp;
+    saveStrings("lines.txt", lines);
+    ca.is_line = true;
+  }
+}
+
+void checkLine5() {
+  if (ca.generation < 80 && ca.generation > 20) {
+    line[ca.generation - 21] = ca.cells[5];
+  }
+  if (ca.generation > 80 && ca.is_line == false) {
+    for (int i = 1; i < line.length; i++) {
+      if (line[i-1] != line[i]) {
+        return;
+      }
+    }
+    String str = "";
+         for(int j=0;j<ca.rule.length;j++) {
+            str = str + Integer.toString(ca.rule[j]);
+         }
+    lines5_alist.add(str);
+    Object[] o = lines5_alist.toArray();
+    String[] temp = Arrays.copyOf(o, o.length, String[].class);
+    lines5 = temp;
+    saveStrings("lines5.txt", lines5);
+    ca.is_line = true;
+  }
 }
 
 void checkIgnore() {
@@ -196,6 +256,7 @@ void mousePressed() {
     for (int i = 0; i < ca.rule.length; i++) {
         ca.rule[i] = t.charAt(i)-'0';
     }
+    ca.is_line = false;
     ca.start_over();
   } else if (rect_i.rectOver && ca.rule.length == 8 && ca.is_i3) { 
     ca.is_search = false;
@@ -213,6 +274,7 @@ void mousePressed() {
     for (int i = 0; i < ca.rule.length; i++) {
         ca.rule[i] = t.charAt(i)-'0';
     }
+    ca.is_line = false;
     ca.start_over();
   } else if (rect_i.rectOver && ca.rule.length == 32 && !ca.is_i5 && !ca.is_i3) { 
     ca.is_search = false;
@@ -230,6 +292,7 @@ void mousePressed() {
     for (int i = 0; i < ca.rule.length; i++) {
         ca.rule[i] = floor(random(2));
     }
+    ca.is_line = false;
     saveStrings("data_5.txt", ignore_5);
     ca.start_over();
   } else if (rect_i.rectOver && ca.rule.length == 8 && !ca.is_i5 && !ca.is_i3) { 
@@ -248,6 +311,7 @@ void mousePressed() {
     for (int i = 0; i < ca.rule.length; i++) {
         ca.rule[i] = floor(random(2));
     }
+    ca.is_line = false;
     saveStrings("data_3.txt", ignore_3);
     ca.start_over();
   } else if (rect_i5.rectOver && ca.rule.length == 32 && ca.is_i5) { 
@@ -257,6 +321,7 @@ void mousePressed() {
     for (int i = 0; i < ca.rule.length; i++) {
         ca.rule[i] = floor(random(2));
     }
+    ca.is_line = false;
     ca.start_over();
   } else if (rect_i5.rectOver) { 
     ca.is_search = false;
@@ -268,6 +333,7 @@ void mousePressed() {
     for (int i = 0; i < temp.length(); i++) {
         ca.rule[i] = temp.charAt(i) - '0';
     }
+    ca.is_line = false;
     ca.neighbors = 5;
     ca.start_over();
   } else if (rect_i3.rectOver && ca.rule.length == 8 && ca.is_i3) { 
@@ -277,6 +343,7 @@ void mousePressed() {
     for (int i = 0; i < ca.rule.length; i++) {
         ca.rule[i] = floor(random(2));
     }
+    ca.is_line = false;
     ca.start_over();
   } else if (rect_i3.rectOver) { 
     ca.is_search = false;
@@ -288,6 +355,7 @@ void mousePressed() {
     for (int i = 0; i < temp.length(); i++) {
         ca.rule[i] = temp.charAt(i) - '0';
     }
+    ca.is_line = false;
     ca.neighbors = 3;
     ca.start_over();
   } else if (rect_3.rectOver) {
@@ -303,6 +371,7 @@ void mousePressed() {
           ca.rule[i] = floor(random(2));
       }
     }
+    ca.is_line = false;
     ca.start_over();
   } else if (rect_5.rectOver) {
     ca.is_i3 = false;
@@ -317,6 +386,7 @@ void mousePressed() {
           ca.rule[i] = floor(random(2));
       }
     }
+    ca.is_line = false;
     ca.start_over();
   } else if (rect_r.rectOver) {
     rect_r.currentColor = rect_r.rectColor;
@@ -345,6 +415,7 @@ void mousePressed() {
     for (int i = 0; i < temp.length(); i++) {
         ca.rule[i] = temp.charAt(i) - '0';
     }
+    ca.is_line = false;
     ca.start_over();
   } else if (rect_n.rectOver && ca.is_i5) {
     ca.is_search = false;
@@ -352,6 +423,7 @@ void mousePressed() {
     for (int i = 0; i < temp.length(); i++) {
       ca.rule[i] = temp.charAt(i) - '0';
     }
+    ca.is_line = false;
     ca.start_over();
   } else if (rect_n.rectOver) {
     ca.is_search = false;
@@ -359,6 +431,7 @@ void mousePressed() {
     for (int i = 0; i < ca.rule.length; i++) {
       ca.rule[i] = floor(random(2));
     }
+    ca.is_line = false;
     ca.start_over();
   }
 }
@@ -367,7 +440,7 @@ void keyPressed() {
   for (TEXTBOX t : textboxes) {
       t.KEYPRESSED(key, (int)keyCode);
    }
-  if (key == '\n' && tb2.Text.length() > 0 && tb2.Text.length() < 3) {
+  if (key == '\n' && tb2.Text.length() > 0 && tb2.Text.length() < 3 && int(tb2.Text) > 0 && int(tb2.Text) < 70) {
     background(0);
     ca.resolution = int(tb2.Text);
     ca.cells = new int[width/ca.resolution];

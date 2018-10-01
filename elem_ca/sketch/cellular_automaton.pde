@@ -9,6 +9,7 @@ class CA {
   boolean is_i3 = false;
   boolean is_i5 = false;
   boolean is_search = false;
+  boolean is_line = false;
   
   CA() {
     cells = new int[width/resolution];
