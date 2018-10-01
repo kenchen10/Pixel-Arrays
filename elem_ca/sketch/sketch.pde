@@ -5,12 +5,15 @@ import java.math.BigInteger;
 ArrayList<TEXTBOX> textboxes = new ArrayList<TEXTBOX>();
 TEXTBOX userTB;
 TEXTBOX tb2;
+
 int counter = 0;
 
 String[] ignore_3;
+String[] no_i3;
 String[] ignore_5;
 
 ArrayList<String> i3_alist;
+ArrayList<String> no_i3_alist;
 ArrayList<String> i5_alist;
 
 CA ca;
@@ -23,9 +26,15 @@ Rect rect_n;
 Rect rect_i3;
 Rect rect_i5;
 Rect rect_i;
+Rect rect_n2;
+Rect rect_n3;
+Rect rect_n4;
+Rect rect_n5;
+
 
 Rect style;
 Rect style2;
+Rect style3;
 
 ArrayList<Rect> rects = new ArrayList<Rect>();
 
@@ -38,7 +47,7 @@ void startScreen(){
 }
 
 void settings() {
-   size(2000, 1300);
+   size(2450, 1300);
 }
 
 void setup() {
@@ -46,8 +55,10 @@ void setup() {
    // CONFIGURED USING THE GLOBAL VARS
    ignore_3 = loadStrings("data_3.txt");
    ignore_5 = loadStrings("data_5.txt");
+   no_i3 = loadStrings("no_i.txt");
    i3_alist = new ArrayList<String>(Arrays.asList(ignore_3));
    i5_alist = new ArrayList<String>(Arrays.asList(ignore_5));
+   no_i3_alist = new ArrayList<String>(Arrays.asList(no_i3));
    userTB = new TEXTBOX();
    userTB.X = width - 460;
    userTB.Y = 10;
@@ -63,7 +74,7 @@ void setup() {
    textboxes.add(tb2);
    int[] starting_rule = new int[8];
    for (int i = 0; i < 8; i++) {
-      starting_rule[i] = floor(random(2)); 
+      starting_rule[i] = 0; 
    }
    ca = new CA(starting_rule);
    ca.neighbors = 3;
@@ -77,8 +88,16 @@ void setup() {
    rect_i = new Rect(width - 50, userTB.Y + userTB.H + 390, 40, 40, color(0), color(87), color(51), color(102), false);
    style = new Rect(width - 50, userTB.Y + userTB.H + 20, 40, 240, color(0), color(87), color(51), color(102), false);
    style2 = new Rect(width - 50, userTB.Y + userTB.H + 280, 40, 70, color(0), color(87), color(51), color(102), false);
+   rect_n2 = new Rect(width - 50, userTB.Y + userTB.H + 510, 40, 40, color(0), color(87), color(51), color(102), false);
+   rect_n3 = new Rect(width - 50, userTB.Y + userTB.H + 560, 40, 40, color(0), color(87), color(51), color(102), false);
+   rect_n4 = new Rect(width - 50, userTB.Y + userTB.H + 610, 40, 40, color(0), color(87), color(51), color(102), false);
+   rect_n5 = new Rect(width - 50, userTB.Y + userTB.H + 660, 40, 40, color(0), color(87), color(51), color(102), false);
+   style3 = new Rect(width - 50, userTB.Y + userTB.H + 510, 40, 190, color(0), color(87), color(51), color(102), false);
    style.ignore = true;
+   style2.ignore = true;
+   style3.ignore = true;
    rects.add(style);
+   rects.add(style3);
    rects.add(style2);
    rects.add(rect_3);
    rects.add(rect_5);
@@ -88,6 +107,10 @@ void setup() {
    rects.add(rect_i3);
    rects.add(rect_i5);
    rects.add(rect_i);
+   rects.add(rect_n2);
+   rects.add(rect_n3);
+   rects.add(rect_n4);
+   rects.add(rect_n5);
    background(0);
 }
 
@@ -120,10 +143,23 @@ void checkIgnore() {
             str = str + Integer.toString(ca.rule[j]);
          }
       if (i3_alist.contains(str)) {
+        if (no_i3_alist.contains(str)) {
+          no_i3_alist.remove(str);
+          Object[] o = no_i3_alist.toArray();
+          String[] temp = Arrays.copyOf(o, o.length, String[].class);
+          no_i3 = temp;
+          saveStrings("no_i.txt", no_i3);
+        }
         for (int j = 0; j < 8; j++) {
               ca.rule[j] = floor(random(2));
               ca.start_over();
         }
+      } else if (!no_i3_alist.contains(str)) {
+        no_i3_alist.add(str);
+        Object[] o = no_i3_alist.toArray();
+        String[] temp = Arrays.copyOf(o, o.length, String[].class);
+        no_i3 = temp;
+        saveStrings("no_i.txt", no_i3);
       }
    } else if (ca.neighbors == 5 && !ca.is_i5) {
      String str = "";
@@ -155,7 +191,8 @@ void mousePressed() {
     String[] temp = Arrays.copyOf(o, o.length, String[].class);
     ignore_5 = temp;
     saveStrings("data_5.txt", ignore_5);
-    String t = ignore_5[floor(random(ignore_5.length))];
+    counter = counter + 1;
+    String t = ignore_5[counter % ignore_5.length];
     for (int i = 0; i < ca.rule.length; i++) {
         ca.rule[i] = t.charAt(i)-'0';
     }
@@ -171,7 +208,8 @@ void mousePressed() {
     String[] temp = Arrays.copyOf(o, o.length, String[].class);
     ignore_3 = temp;
     saveStrings("data_3.txt", ignore_3);
-    String t = ignore_3[floor(random(ignore_3.length))];
+    counter += 1;
+    String t = ignore_3[counter % ignore_3.length];
     for (int i = 0; i < ca.rule.length; i++) {
         ca.rule[i] = t.charAt(i)-'0';
     }
@@ -287,6 +325,19 @@ void mousePressed() {
   } else if (rect_h.rectOver) {
     rect_h.currentColor = rect_h.rectColor;
     ca.rand = 1;
+    ca.start_over();
+  } else if (rect_n2.rectOver) {
+    ca.rand = 2;
+    ca.start_over();
+  } else if (rect_n3.rectOver) {
+    ca.rand = 3;
+    ca.start_over();
+  } else if (rect_n4.rectOver) {
+    ca.rand = 4;
+    ca.start_over();
+  } else if (rect_n5.rectOver) {
+    rect_h.currentColor = rect_h.rectColor;
+    ca.rand = 5;
     ca.start_over();
   } else if (rect_n.rectOver && ca.is_i3) {
     ca.is_search = false;
@@ -413,4 +464,8 @@ void draw_text() {
   text("i3", rect_i3.rectX + rect_i3.rectW/2 - 7, rect_i3.rectY+rect_i3.rectH/2 + 5); 
   text("i5", rect_i5.rectX + rect_i5.rectW/2 - 7, rect_i5.rectY+rect_i5.rectH/2 + 5); 
   text("i", rect_i.rectX + rect_i.rectW/2 - 7, rect_i.rectY+rect_i.rectH/2 + 5); 
+  text("n2", rect_n2.rectX + rect_n2.rectW/2 - 10, rect_n2.rectY+rect_n2.rectH/2 + 5); 
+  text("n3", rect_n3.rectX + rect_n3.rectW/2 - 10, rect_n3.rectY+rect_n3.rectH/2 + 5); 
+  text("n4", rect_n4.rectX + rect_n4.rectW/2 - 10, rect_n4.rectY+rect_n4.rectH/2 + 5); 
+  text("n5", rect_n5.rectX + rect_n5.rectW/2 - 10, rect_n5.rectY+rect_n5.rectH/2 + 5); 
 }

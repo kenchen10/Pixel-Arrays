@@ -1,5 +1,5 @@
 class CA {
-  
+   
   int[] cells;
   int generation;
   int[] rule;
@@ -39,13 +39,6 @@ class CA {
         cells[i] = floor(random(2)); 
      }
    } else if (rand == 1) {
-     //for (int i = 0; i < cells.length; i++) {
-     //  if (i % 2 == 0) {
-     //   cells[i] = 1; 
-     //  } else {
-     //    cells[i] = 0;
-     //  }
-     //}
      for (int i = 0; i < cells.length; i++) {
        cells[i] = 0;
      }
@@ -59,17 +52,44 @@ class CA {
         cells[i] = floor(random(2)); 
      }
    } else if (rand == 1) {
-     //for (int i = 0; i < cells.length; i++) {
-     //  if (i % 2 == 0) {
-     //   cells[i] = 1; 
-     //  } else {
-     //    cells[i] = 0;
-     //  }
-     //}
      for (int i = 0; i < cells.length; i++) {
        cells[i] = 0;
      }
      cells[cells.length/2] = 1;
+   } else if (rand == 2) {
+     for (int i = 0; i < ca.cells.length; i++) {
+      ca.cells[i] = 0;
+    }
+    int l = ca.cells.length / 3;
+    ca.cells[l] = 1;
+    ca.cells[l * 2] = 1;
+   } else if (rand == 3) {
+     for (int i = 0; i < ca.cells.length; i++) {
+      ca.cells[i] = 0;
+    }
+    int l = ca.cells.length / 4;
+    ca.cells[l] = 1;
+    ca.cells[l * 2] = 1;
+    ca.cells[l * 3] = 1;
+   } else if (rand == 4) {
+     for (int i = 0; i < ca.cells.length; i++) {
+      ca.cells[i] = 0;
+    }
+    int l = ca.cells.length / 5;
+    ca.cells[l] = 1;
+    ca.cells[l * 2] = 1;
+    ca.cells[l * 3] = 1;
+    ca.cells[l * 4] = 1;
+   } else if (rand == 5) {
+     for (int i = 0; i < ca.cells.length; i++) {
+      ca.cells[i] = 0;
+    }
+    int l = ca.cells.length / 6;
+    ca.cells[l] = 1;
+    ca.cells[l * 2] = 1;
+    ca.cells[l * 3] = 1;
+    ca.cells[l * 4] = 1;
+    ca.cells[l * 5] = 1;
    }
    generation = 0;
    background(0);
