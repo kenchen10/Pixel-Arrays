@@ -1,5 +1,5 @@
 class CA {
-   
+
   int[] cells;
   int generation;
   int[] rule;
@@ -10,17 +10,19 @@ class CA {
   boolean is_i5 = false;
   boolean is_search = false;
   boolean is_line = false;
-  
+  boolean is_res = false;
+  boolean is_half = false;
+
   CA() {
     cells = new int[width/resolution];
    if (rand == 0) {
      for (int i = 0; i < cells.length; i++) {
-        cells[i] = floor(random(2)); 
+        cells[i] = floor(random(2));
      }
    } else if (rand == 1) {
      //for (int i = 0; i < cells.length; i++) {
      //  if (i % 2 == 0) {
-     //   cells[i] = 1; 
+     //   cells[i] = 1;
      //  } else {
      //    cells[i] = 0;
      //  }
@@ -31,13 +33,13 @@ class CA {
      cells[cells.length/2] = 1;
    }
   }
-  
+
   CA(int[] r) {
-   rule = r; 
+   rule = r;
    cells = new int[width/resolution];
    if (rand == 0) {
      for (int i = 0; i < cells.length; i++) {
-        cells[i] = floor(random(2)); 
+        cells[i] = floor(random(2));
      }
    } else if (rand == 1) {
      for (int i = 0; i < cells.length; i++) {
@@ -46,11 +48,11 @@ class CA {
      cells[cells.length/2] = 1;
    }
   }
-  
+
   void start_over() {
    if (rand == 0) {
      for (int i = 0; i < cells.length; i++) {
-        cells[i] = floor(random(2)); 
+        cells[i] = floor(random(2));
      }
    } else if (rand == 1) {
      for (int i = 0; i < cells.length; i++) {
@@ -95,7 +97,7 @@ class CA {
    generation = 0;
    background(0);
   }
-  
+
   void render() {
     for (int i = 0; i < cells.length; i++) {
        if (cells[i] == 1) {
@@ -107,7 +109,7 @@ class CA {
        rect(i * resolution, generation * resolution + userTB.Y + 45, resolution, resolution);
     }
   }
-  
+
   void generate() {
     int[] next = new int[width/resolution];
     if (neighbors == 3) {
@@ -118,7 +120,7 @@ class CA {
         next[i] = doRule3(left, middle, right);
       }
       for (int i = 0; i < cells.length; i++) {
-        cells[i] = next[i]; 
+        cells[i] = next[i];
       }
     } else if (neighbors == 5) {
       for (int i = 0; i < cells.length; i++) {
@@ -130,12 +132,12 @@ class CA {
         next[i] = doRule5(left, middle1, middle2, middle3, right);
       }
       for (int i = 0; i < cells.length; i++) {
-        cells[i] = next[i]; 
+        cells[i] = next[i];
       }
     }
     generation += 1;
   }
-  
+
   int doRule3(int left, int middle, int right) {
     if (left == 1 && middle == 1 && right == 1) {
       return rule[0];
@@ -149,14 +151,14 @@ class CA {
       return rule[4];
     } else if (left == 0 && middle == 1 && right == 0) {
       return rule[5];
-    } else if (left == 0 && middle == 0 && right == 0) {
+    } else if (left == 0 && middle == 0 && right == 1) {
       return rule[6];
     } else if (left == 0 && middle == 0 && right == 0) {
       return rule[7];
     }
     return 0;
   }
-  
+
   int doRule5(int left, int middle1, int middle2, int middle3, int right) {
     if (left == 1 && middle1 == 1 && middle2 == 1 && middle3 == 1 && right == 1) {
       return rule[0];
@@ -222,8 +224,8 @@ class CA {
       return rule[30];
     } else if (left == 0 && middle1 == 0 && middle2 == 0 && middle3 == 0 && right == 0) {
       return rule[31];
-    } 
+    }
     return 0;
   }
-  
+
 }
