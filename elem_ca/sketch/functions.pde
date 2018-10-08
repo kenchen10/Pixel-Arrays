@@ -9,12 +9,13 @@ TEXTBOX tb2;
 TEXTBOX start_box;
 
 int counter = 0;
+float percent;
 
 String[] ignore_3;
 String[] no_i3;
 String[] ignore_5;
 String[] lines;
-int[] line = new int[60];
+int[] line;
 String[] lines5;
 String[] half3;
 String[] half5;
@@ -49,11 +50,14 @@ Rect rect_n4;
 Rect rect_n5;
 Rect rect_l5;
 Rect rect_l3;
+Rect rect_h3;
+Rect rect_h5;
 
 
 Rect style;
 Rect style2;
 Rect style3;
+Rect style4;
 
 ArrayList<Rect> rects = new ArrayList<Rect>();
 
@@ -76,12 +80,16 @@ void load_rects() {
   style3 = new Rect(width - 50, userTB.Y + userTB.H + 510, 40, 190, color(0), color(87), color(51), color(102), false);
   rect_l3 = new Rect(width - 50, userTB.Y + userTB.H + 710, 40, 40, color(0), color(87), color(51), color(102), false);
   rect_l5 = new Rect(width - 50, userTB.Y + userTB.H + 760, 40, 40, color(0), color(87), color(51), color(102), false);
+  rect_h3 = new Rect(width - 50, userTB.Y + userTB.H + 810, 40, 40, color(0), color(87), color(51), color(102), false);
+  rect_h5 = new Rect(width - 50, userTB.Y + userTB.H + 860, 40, 40, color(0), color(87), color(51), color(102), false);
+  style4 = new Rect(width - 50, userTB.Y + userTB.H + 710, 40, 150, color(0), color(87), color(51), color(102), false);
   style.ignore = true;
   style2.ignore = true;
   style3.ignore = true;
   rects.add(style);
   rects.add(style3);
   rects.add(style2);
+  rects.add(style4);
   rects.add(rect_3);
   rects.add(rect_5);
   rects.add(rect_r);
@@ -96,6 +104,8 @@ void load_rects() {
   rects.add(rect_n5);
   rects.add(rect_l3);
   rects.add(rect_l5);
+  rects.add(rect_h3);
+  rects.add(rect_h5);
 }
 
 void load_data() {

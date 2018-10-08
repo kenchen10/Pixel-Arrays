@@ -15,6 +15,7 @@ void setup() {
    ca.neighbors = 3;
    load_rects();
    background(0);
+   line = new int[round(height/(ca.resolution*2)) - round(height/(ca.resolution*3))];
 }
 
 void draw() {
@@ -42,7 +43,8 @@ void draw() {
      r.update();
    }
    fill(250, 250, 250);
-
+   fill(96, 157, 255, 10);
+   rect(10, 10, width - 20, userTB.H, 5); 
    // DRAW THE TEXTBOXES
    userTB.DRAW();
    tb2.DRAW();
@@ -52,7 +54,17 @@ void draw() {
    } else if (ca.neighbors == 5 && ca.rand == 0) {
      checkLine5();
    }
-   checkHalf();
+   if (ca.is_half == true && ca.rand == 0 && ca.generation == round(height/(ca.resolution*2))) {
+    int count = 0;
+    for (int i = 1; i < ca.cells.length; i++) {
+      if (ca.cells[i] != ca.cells[i-1]) {
+        count += 1;
+      }
+    }
+    percent = float(count) / float(ca.cells.length);
+   } else if (ca.is_half == false) {
+     checkHalf();
+   }
    checkIgnore();
    ca.render();
    ca.generate();
@@ -67,14 +79,14 @@ void draw() {
 
 
 void checkLine3() {
-  if (ca.generation < 80 && ca.generation > 20) {
-    line[ca.generation - 21] = ca.cells[5];
+  if (ca.generation > round(height/(ca.resolution * 3)) && ca.generation < round(height/(ca.resolution * 2))) {
+    line[ca.generation - (round(height/(ca.resolution * 3)))] = ca.cells[5];
   }
   String str = "";
          for(int j=0;j<ca.rule.length;j++) {
             str = str + Integer.toString(ca.rule[j]);
          }
-  if (ca.generation > 80 && ca.is_line == false && !lines_alist.contains(str)) {
+  if (ca.generation > round(height/(ca.resolution * 2)) && ca.is_line == false && !lines_alist.contains(str)) {
     for (int i = 1; i < line.length; i++) {
       if (line[i-1] != line[i]) {
         return;
@@ -90,14 +102,14 @@ void checkLine3() {
 }
 
 void checkLine5() {
-  if (ca.generation < 80 && ca.generation > 20) {
-    line[ca.generation - 21] = ca.cells[5];
+  if (ca.generation > round(height/(ca.resolution * 3)) && ca.generation < round(height/(ca.resolution * 2))) {
+    line[ca.generation - (round(height/(ca.resolution * 3)))] = ca.cells[5];
   }
   String str = "";
          for(int j=0;j<ca.rule.length;j++) {
             str = str + Integer.toString(ca.rule[j]);
          }
-  if (ca.generation > 80 && ca.is_line == false && !lines5_alist.contains(str)) {
+  if (ca.generation > round(height/(ca.resolution * 2)) && ca.is_line == false && !lines5_alist.contains(str)) {
     for (int i = 1; i < line.length; i++) {
       if (line[i-1] != line[i]) {
         return;
@@ -119,34 +131,31 @@ void checkHalf() {
          }
   if (ca.rand == 0) {
     int count = 0;
-    if (ca.neighbors == 3 && ca.generation == round(height/5)) {
+    if (ca.neighbors == 3 && ca.generation == round(height/(ca.resolution*2)) && !half3_alist.contains(str) && !lines_alist.contains(str)) {
       for (int i = 1; i < ca.cells.length; i++) {
         if (ca.cells[i] != ca.cells[i-1]) {
           count += 1;
         }
       }
-      print(count);
-      if (count >= ca.cells.length/2.5) {
+      if (float(count)/float(ca.cells.length) >= .6) {
         half3_alist.add(str);
         Object[] o = half3_alist.toArray();
         String[] temp = Arrays.copyOf(o, o.length, String[].class);
         half3 = temp;
         saveStrings("half_3.txt", half3);
-        ca.is_half = true;
       }
-    } else if (ca.neighbors == 5 && ca.generation == round(height/5)) {
+    } else if (ca.neighbors == 5 && ca.generation == round(height/(ca.resolution*2)) && !half5_alist.contains(str) && !lines5_alist.contains(str)) {
       for (int i = 1; i < ca.cells.length; i++) {
         if (ca.cells[i] != ca.cells[i-1]) {
           count += 1;
         }
       }
-      if (count >= ca.cells.length/2.5) {
+      if (float(count)/float(ca.cells.length) >= .6) {
         half5_alist.add(str);
         Object[] o = half5_alist.toArray();
         String[] temp = Arrays.copyOf(o, o.length, String[].class);
         half5 = temp;
         saveStrings("half_5.txt", half5);
-        ca.is_half = true;
       }
     }
   }
@@ -218,6 +227,7 @@ void mousePressed() {
         ca.rule[i] = t.charAt(i)-'0';
     }
     ca.is_line = false;
+    ca.is_half = false;
     ca.start_over();
   } else if (rect_i.rectOver && ca.rule.length == 8 && ca.is_i3) {
     ca.is_search = false;
@@ -236,6 +246,7 @@ void mousePressed() {
         ca.rule[i] = t.charAt(i)-'0';
     }
     ca.is_line = false;
+    ca.is_half = false;
     ca.start_over();
   } else if (rect_i.rectOver && ca.rule.length == 32 && !ca.is_i5 && !ca.is_i3) {
     ca.is_search = false;
@@ -254,6 +265,7 @@ void mousePressed() {
         ca.rule[i] = floor(random(2));
     }
     ca.is_line = false;
+    ca.is_half = false;
     saveStrings("data_5.txt", ignore_5);
     ca.start_over();
   } else if (rect_i.rectOver && ca.rule.length == 8 && !ca.is_i5 && !ca.is_i3) {
@@ -273,6 +285,7 @@ void mousePressed() {
         ca.rule[i] = floor(random(2));
     }
     ca.is_line = false;
+    ca.is_half = false;
     saveStrings("data_3.txt", ignore_3);
     ca.start_over();
   } else if (rect_i5.rectOver && ca.rule.length == 32 && ca.is_i5) {
@@ -283,6 +296,7 @@ void mousePressed() {
         ca.rule[i] = floor(random(2));
     }
     ca.is_line = false;
+    ca.is_half = false;
     ca.start_over();
   } else if (rect_i5.rectOver) {
     ca.is_search = false;
@@ -295,6 +309,7 @@ void mousePressed() {
         ca.rule[i] = temp.charAt(i) - '0';
     }
     ca.is_line = false;
+    ca.is_half = false;
     ca.neighbors = 5;
     ca.start_over();
   } else if (rect_i3.rectOver && ca.rule.length == 8 && ca.is_i3) {
@@ -305,6 +320,7 @@ void mousePressed() {
         ca.rule[i] = floor(random(2));
     }
     ca.is_line = false;
+    ca.is_half = false;
     ca.start_over();
   } else if (rect_i3.rectOver) {
     ca.is_search = false;
@@ -317,6 +333,7 @@ void mousePressed() {
         ca.rule[i] = temp.charAt(i) - '0';
     }
     ca.is_line = false;
+    ca.is_half = false;
     ca.neighbors = 3;
     ca.start_over();
   } else if (rect_l3.rectOver) {
@@ -330,6 +347,7 @@ void mousePressed() {
         ca.rule[i] = temp.charAt(i) - '0';
     }
     ca.is_line = true;
+    ca.is_half = false;
     ca.neighbors = 3;
     ca.start_over();
   } else if (rect_l5.rectOver) {
@@ -343,12 +361,39 @@ void mousePressed() {
         ca.rule[i] = temp.charAt(i) - '0';
     }
     ca.is_line = true;
+    ca.is_half = false;
+    ca.neighbors = 5;
+    ca.start_over();
+  } else if (rect_h3.rectOver) {
+    ca.is_search = false;
+    ca.is_i5 = false;
+    ca.is_i3 = false;
+    ca.rule = new int[8];
+    String temp = half3[floor(random(half3.length))];
+    for (int i = 0; i < temp.length(); i++) {
+        ca.rule[i] = temp.charAt(i) - '0';
+    }
+    ca.is_half = true;
+    ca.neighbors = 3;
+    ca.start_over();
+  } else if (rect_h5.rectOver) {
+    ca.is_search = false;
+    ca.is_i5 = false;
+    ca.is_i3 = false;
+    ca.rule = new int[32];
+    String temp = half5[floor(random(half5.length))];
+    for (int i = 0; i < temp.length(); i++) {
+        ca.rule[i] = temp.charAt(i) - '0';
+    }
+    ca.is_half = true;
     ca.neighbors = 5;
     ca.start_over();
   } else if (rect_3.rectOver) {
     ca.is_search = false;
     ca.is_i3 = false;
     ca.is_i5 = false;
+    ca.is_line = false;
+    ca.is_half = false;
     rect_3.currentColor = rect_3.rectColor;
     ca.neighbors = 3;
     userTB.maxLen = 1;
@@ -358,12 +403,13 @@ void mousePressed() {
           ca.rule[i] = floor(random(2));
       }
     }
-    ca.is_line = false;
     ca.start_over();
   } else if (rect_5.rectOver) {
     ca.is_i3 = false;
     ca.is_i5 = false;
     ca.is_search = false;
+    ca.is_line = false;
+    ca.is_half = false;
     rect_5.currentColor = rect_5.rectColor;
     ca.neighbors = 5;
     userTB.maxLen = 7;
@@ -373,7 +419,6 @@ void mousePressed() {
           ca.rule[i] = floor(random(2));
       }
     }
-    ca.is_line = false;
     ca.start_over();
   } else if (rect_r.rectOver) {
     rect_r.currentColor = rect_r.rectColor;
@@ -395,6 +440,22 @@ void mousePressed() {
   } else if (rect_n5.rectOver) {
     rect_h.currentColor = rect_h.rectColor;
     ca.rand = 5;
+    ca.start_over();
+  } else if (rect_n.rectOver && ca.is_half && ca.neighbors == 5) {
+    ca.is_search = false;
+    String temp = half5[floor(random(half5.length))];
+    for (int i = 0; i < temp.length(); i++) {
+        ca.rule[i] = temp.charAt(i) - '0';
+    }
+    ca.is_half = true;
+    ca.start_over();
+  } else if (rect_n.rectOver && ca.is_half && ca.neighbors == 3) {
+    ca.is_search = false;
+    String temp = half3[floor(random(half3.length))];
+    for (int i = 0; i < temp.length(); i++) {
+        ca.rule[i] = temp.charAt(i) - '0';
+    }
+    ca.is_half = true;
     ca.start_over();
   } else if (rect_n.rectOver && ca.is_i3) {
     ca.is_search = false;
@@ -434,9 +495,11 @@ void mousePressed() {
     for (int i = 0; i < ca.rule.length; i++) {
       ca.rule[i] = floor(random(2));
     }
+    ca.is_half = false;
     ca.is_line = false;
     ca.start_over();
   }
+  percent = 0;
 }
 
 void keyPressed() {
@@ -459,6 +522,7 @@ void keyPressed() {
           }
         }
         ca.is_line = false;
+        ca.is_half = false;
         ca.start_over();
         done_n = true;
         start_box.Text = "";
@@ -469,6 +533,7 @@ void keyPressed() {
         rect_5.currentColor = rect_5.rectColor;
         ca.neighbors = 5;
         userTB.maxLen = 7;
+        ca.is_half = false;
         if (ca.rule.length != 32) {
           ca.rule = new int[32];
           for (int i = 0; i < ca.rule.length; i++) {
@@ -554,6 +619,8 @@ void keyPressed() {
        ca.rule[i] = r[i];
     }
     ca.is_i3 = false;
+    ca.is_half = false;
+    ca.is_line = false;
     ca.is_search = true;
     userTB.Text = "";
     userTB.TextLength = 0;
@@ -562,6 +629,8 @@ void keyPressed() {
     background(0);
     ca.is_search = true;
     ca.is_i3 = false;
+    ca.is_half = false;
+    ca.is_line = false;
     String temp = new BigInteger(userTB.Text, 16).toString(2);
     Integer length = temp.length();
     if (length < 32) {
@@ -610,6 +679,14 @@ void draw_text() {
     textSize(20);
     fill(255);
     text("Ignore 5", width / 4 + 350, userTB.Y + 24);
+  } else if (ca.is_half == true && percent != 0) {
+    textSize(20);
+    fill(255);
+    text(round(percent)*100 +"% checkers", width / 4 + 350, userTB.Y + 24);
+  } if (ca.is_half == true) {
+    textSize(20);
+    fill(255);
+    text("checkerboard", width / 4 + 900, userTB.Y + 24);
   }
   String t = join(str_rule, "");
   t = t.replaceAll("....", "$0 ");
@@ -632,4 +709,6 @@ void draw_text() {
   text("n5", rect_n5.rectX + rect_n5.rectW/2 - 10, rect_n5.rectY+rect_n5.rectH/2 + 5);
   text("l3", rect_l3.rectX + rect_l3.rectW/2 - 10, rect_l3.rectY+rect_l3.rectH/2 + 5);
   text("l5", rect_l5.rectX + rect_l5.rectW/2 - 10, rect_l5.rectY+rect_l5.rectH/2 + 5);
+  text("h3", rect_h3.rectX + rect_h3.rectW/2 - 10, rect_h3.rectY+rect_h3.rectH/2 + 5);
+  text("h5", rect_h5.rectX + rect_h5.rectW/2 - 10, rect_h5.rectY+rect_h5.rectH/2 + 5);
 }

@@ -20,13 +20,6 @@ class CA {
         cells[i] = floor(random(2));
      }
    } else if (rand == 1) {
-     //for (int i = 0; i < cells.length; i++) {
-     //  if (i % 2 == 0) {
-     //   cells[i] = 1;
-     //  } else {
-     //    cells[i] = 0;
-     //  }
-     //}
      for (int i = 0; i < cells.length; i++) {
        cells[i] = 0;
      }
@@ -95,6 +88,7 @@ class CA {
     ca.cells[l * 5] = 1;
    }
    generation = 0;
+   line = new int[round(height/(ca.resolution*2)) - round(height/(ca.resolution*3))];
    background(0);
   }
 
@@ -106,7 +100,7 @@ class CA {
          fill(255);
        }
        noStroke();
-       rect(i * resolution, generation * resolution + userTB.Y + 45, resolution, resolution);
+       rect(i * resolution, generation * resolution, resolution, resolution);
     }
   }
 
