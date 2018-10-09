@@ -22,7 +22,7 @@ class Rect {
   
   void draw_rect() {
     currentColor = rectColor;
-    fill(currentColor, 2);
+    fill(currentColor, 7);
     noStroke();
     rect(rectX, rectY, rectW, rectH, 5); 
     }

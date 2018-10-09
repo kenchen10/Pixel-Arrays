@@ -51,7 +51,7 @@ void draw() {
     ca.start_over();
    }
    fill(250, 250, 250);
-   fill(96, 157, 255, 2);
+   fill(96, 157, 255, 7);
    rect(10, 10, width - 20, userTB.H, 5); 
    // DRAW THE TEXTBOXES
    userTB.DRAW();
