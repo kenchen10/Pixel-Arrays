@@ -12,6 +12,7 @@ class CA {
   boolean is_line = false;
   boolean is_res = false;
   boolean is_half = false;
+  boolean is_cycle = false;
 
   CA() {
     cells = new int[width/resolution];

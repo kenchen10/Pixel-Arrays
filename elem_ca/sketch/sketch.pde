@@ -42,8 +42,16 @@ void draw() {
    for (Rect r: rects) {
      r.update();
    }
+   
+   if (ca.is_cycle && ca.generation == height/ca.resolution) {
+    ca.is_search = false;
+    for (int i = 0; i < ca.rule.length; i++) {
+      ca.rule[i] = floor(random(2));
+    }
+    ca.start_over();
+   }
    fill(250, 250, 250);
-   fill(96, 157, 255, 10);
+   fill(96, 157, 255, 2);
    rect(10, 10, width - 20, userTB.H, 5); 
    // DRAW THE TEXTBOXES
    userTB.DRAW();
@@ -106,9 +114,9 @@ void checkLine5() {
     line[ca.generation - (round(height/(ca.resolution * 3)))] = ca.cells[5];
   }
   String str = "";
-         for(int j=0;j<ca.rule.length;j++) {
-            str = str + Integer.toString(ca.rule[j]);
-         }
+  for(int j=0;j<ca.rule.length;j++) {
+      str = str + Integer.toString(ca.rule[j]);
+  }
   if (ca.generation > round(height/(ca.resolution * 2)) && ca.is_line == false && !lines5_alist.contains(str)) {
     for (int i = 1; i < line.length; i++) {
       if (line[i-1] != line[i]) {
@@ -126,9 +134,9 @@ void checkLine5() {
 
 void checkHalf() {
   String str = "";
-         for(int j=0;j<ca.rule.length;j++) {
-            str = str + Integer.toString(ca.rule[j]);
-         }
+  for(int j=0;j<ca.rule.length;j++) {
+    str = str + Integer.toString(ca.rule[j]);
+  }
   if (ca.rand == 0) {
     int count = 0;
     if (ca.neighbors == 3 && ca.generation == round(height/(ca.resolution*2)) && !half3_alist.contains(str) && !lines_alist.contains(str)) {
@@ -162,7 +170,7 @@ void checkHalf() {
 }
 
 void checkIgnore() {
-  if (!ca.is_search && !ca.is_line && !ca.is_res && !ca.is_half) {
+  if (!ca.is_search && !ca.is_line && !ca.is_res && !ca.is_half && !ca.is_cycle) {
     if (ca.neighbors == 3 && !ca.is_i3) {
       String str = "";
          for(int j=0;j<ca.rule.length;j++) {
@@ -210,7 +218,19 @@ void mousePressed() {
    if (done_n == false || done_n == true && done_r == false || done_n == true && done_r == true && done_o == false) {
      start_box.PRESSED(mouseX, mouseY);
    }
-   if (rect_i.rectOver && ca.rule.length == 32 && ca.is_i5) {
+   if (rect_c.rectOver && ca.is_cycle) {
+     ca.is_cycle = false;
+   } else if (rect_c.rectOver) {
+     ca.is_cycle = true;
+     ca.is_search = false;
+    rect_n.currentColor = rect_n.rectColor;
+    for (int i = 0; i < ca.rule.length; i++) {
+      ca.rule[i] = floor(random(2));
+    }
+    ca.is_half = false;
+    ca.is_line = false;
+    ca.start_over();
+   } else if (rect_i.rectOver && ca.rule.length == 32 && ca.is_i5) {
     ca.is_search = false;
     String str = "";
     for (int j=0;j<ca.rule.length;j++) {
@@ -226,6 +246,7 @@ void mousePressed() {
     for (int i = 0; i < ca.rule.length; i++) {
         ca.rule[i] = t.charAt(i)-'0';
     }
+    ca.is_cycle = false;
     ca.is_line = false;
     ca.is_half = false;
     ca.start_over();
@@ -246,6 +267,7 @@ void mousePressed() {
         ca.rule[i] = t.charAt(i)-'0';
     }
     ca.is_line = false;
+    ca.is_cycle = false;
     ca.is_half = false;
     ca.start_over();
   } else if (rect_i.rectOver && ca.rule.length == 32 && !ca.is_i5 && !ca.is_i3) {
@@ -265,6 +287,7 @@ void mousePressed() {
         ca.rule[i] = floor(random(2));
     }
     ca.is_line = false;
+    ca.is_cycle = false;
     ca.is_half = false;
     saveStrings("data_5.txt", ignore_5);
     ca.start_over();
@@ -285,6 +308,7 @@ void mousePressed() {
         ca.rule[i] = floor(random(2));
     }
     ca.is_line = false;
+    ca.is_cycle = false;
     ca.is_half = false;
     saveStrings("data_3.txt", ignore_3);
     ca.start_over();
@@ -296,6 +320,7 @@ void mousePressed() {
         ca.rule[i] = floor(random(2));
     }
     ca.is_line = false;
+    ca.is_cycle = false;
     ca.is_half = false;
     ca.start_over();
   } else if (rect_i5.rectOver) {
@@ -309,6 +334,7 @@ void mousePressed() {
         ca.rule[i] = temp.charAt(i) - '0';
     }
     ca.is_line = false;
+    ca.is_cycle = false;
     ca.is_half = false;
     ca.neighbors = 5;
     ca.start_over();
@@ -320,6 +346,7 @@ void mousePressed() {
         ca.rule[i] = floor(random(2));
     }
     ca.is_line = false;
+    ca.is_cycle = false;
     ca.is_half = false;
     ca.start_over();
   } else if (rect_i3.rectOver) {
@@ -333,6 +360,7 @@ void mousePressed() {
         ca.rule[i] = temp.charAt(i) - '0';
     }
     ca.is_line = false;
+    ca.is_cycle = false;
     ca.is_half = false;
     ca.neighbors = 3;
     ca.start_over();
@@ -347,6 +375,7 @@ void mousePressed() {
         ca.rule[i] = temp.charAt(i) - '0';
     }
     ca.is_line = true;
+    ca.is_cycle = false;
     ca.is_half = false;
     ca.neighbors = 3;
     ca.start_over();
@@ -362,6 +391,7 @@ void mousePressed() {
     }
     ca.is_line = true;
     ca.is_half = false;
+    ca.is_cycle = false;
     ca.neighbors = 5;
     ca.start_over();
   } else if (rect_h3.rectOver) {
@@ -374,6 +404,7 @@ void mousePressed() {
         ca.rule[i] = temp.charAt(i) - '0';
     }
     ca.is_half = true;
+    ca.is_cycle = false;
     ca.neighbors = 3;
     ca.start_over();
   } else if (rect_h5.rectOver) {
@@ -394,6 +425,7 @@ void mousePressed() {
     ca.is_i5 = false;
     ca.is_line = false;
     ca.is_half = false;
+    ca.is_cycle = false;
     rect_3.currentColor = rect_3.rectColor;
     ca.neighbors = 3;
     userTB.maxLen = 1;
@@ -408,6 +440,7 @@ void mousePressed() {
     ca.is_i3 = false;
     ca.is_i5 = false;
     ca.is_search = false;
+    ca.is_cycle = false;
     ca.is_line = false;
     ca.is_half = false;
     rect_5.currentColor = rect_5.rectColor;
@@ -497,6 +530,7 @@ void mousePressed() {
     }
     ca.is_half = false;
     ca.is_line = false;
+    ca.is_cycle = false;
     ca.start_over();
   }
   percent = 0;
@@ -510,7 +544,7 @@ void keyPressed() {
      start_box.KEYPRESSED(key, (int)keyCode);
    } if (done_n == false && start_box.Text.length() == 1) {
      if (key == '\n' && int(start_box.Text) == 3) {
-       ca.is_i3 = false;
+        ca.is_i3 = false;
         ca.is_i5 = false;
         ca.is_search = false;
         ca.neighbors = 3;
@@ -527,26 +561,26 @@ void keyPressed() {
         done_n = true;
         start_box.Text = "";
      } else if (key == '\n' && int(start_box.Text) == 5) {
-       ca.is_i3 = false;
-        ca.is_i5 = false;
-        ca.is_search = false;
-        rect_5.currentColor = rect_5.rectColor;
-        ca.neighbors = 5;
-        userTB.maxLen = 7;
-        ca.is_half = false;
-        if (ca.rule.length != 32) {
-          ca.rule = new int[32];
-          for (int i = 0; i < ca.rule.length; i++) {
-              ca.rule[i] = floor(random(2));
-          }
+      ca.is_i3 = false;
+      ca.is_i5 = false;
+      ca.is_search = false;
+      rect_5.currentColor = rect_5.rectColor;
+      ca.neighbors = 5;
+      userTB.maxLen = 7;
+      ca.is_half = false;
+      if (ca.rule.length != 32) {
+        ca.rule = new int[32];
+        for (int i = 0; i < ca.rule.length; i++) {
+            ca.rule[i] = floor(random(2));
         }
-        ca.is_line = false;
-        ca.start_over();
-        done_n = true;
-        start_box.Text = "";
+      }
+      ca.is_line = false;
+      ca.start_over();
+      done_n = true;
+      start_box.Text = "";
      }
    } else if (key == '\n' && done_n == true && done_r == false && start_box.Text.length() == 2 && (start_box.Text.toUpperCase().matches("[A-F0-9]+"))) {
-     background(0);
+    background(0);
     String temp = new BigInteger(start_box.Text, 16).toString(2);
     Integer length = temp.length();
     if (length < 8) {
@@ -567,7 +601,7 @@ void keyPressed() {
     done_r = true;
     ca.start_over();
    } else if (key == '\n' && done_n == true && done_r == false && start_box.Text.length() == 8 && (start_box.Text.toUpperCase().matches("[A-F0-9]+"))) {
-     background(0);
+    background(0);
     String temp = new BigInteger(start_box.Text, 16).toString(2);
     Integer length = temp.length();
     if (length < 32) {
@@ -591,7 +625,7 @@ void keyPressed() {
      ca.rand = int(start_box.Text);
      ca.start_over();
      start_box.Text = "";
-    start_box.TextLength = 0;
+     start_box.TextLength = 0;
      done_o = true;
    } else if (key == '\n' && tb2.Text.length() > 0 && tb2.Text.length() < 3 && int(tb2.Text) > 0 && int(tb2.Text) < 70) {
     background(0);
@@ -682,7 +716,7 @@ void draw_text() {
   } else if (ca.is_half == true && percent != 0) {
     textSize(20);
     fill(255);
-    text(round(percent)*100 +"% checkers", width / 4 + 350, userTB.Y + 24);
+    text(percent*100 +"% checkers", width / 4 + 350, userTB.Y + 24);
   } if (ca.is_half == true) {
     textSize(20);
     fill(255);
@@ -711,4 +745,5 @@ void draw_text() {
   text("l5", rect_l5.rectX + rect_l5.rectW/2 - 10, rect_l5.rectY+rect_l5.rectH/2 + 5);
   text("h3", rect_h3.rectX + rect_h3.rectW/2 - 10, rect_h3.rectY+rect_h3.rectH/2 + 5);
   text("h5", rect_h5.rectX + rect_h5.rectW/2 - 10, rect_h5.rectY+rect_h5.rectH/2 + 5);
+  text("c", rect_c.rectX + rect_c.rectW/2 - 10, rect_c.rectY+rect_c.rectH/2 + 5);
 }

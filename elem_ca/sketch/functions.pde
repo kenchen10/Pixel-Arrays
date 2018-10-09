@@ -52,6 +52,7 @@ Rect rect_l5;
 Rect rect_l3;
 Rect rect_h3;
 Rect rect_h5;
+Rect rect_c;
 
 
 Rect style;
@@ -83,6 +84,7 @@ void load_rects() {
   rect_h3 = new Rect(width - 50, userTB.Y + userTB.H + 810, 40, 40, color(0), color(87), color(51), color(102), false);
   rect_h5 = new Rect(width - 50, userTB.Y + userTB.H + 860, 40, 40, color(0), color(87), color(51), color(102), false);
   style4 = new Rect(width - 50, userTB.Y + userTB.H + 710, 40, 150, color(0), color(87), color(51), color(102), false);
+  rect_c = new Rect(width - 50, userTB.Y + userTB.H + 910, 40, 40, color(0), color(87), color(51), color(102), false);
   style.ignore = true;
   style2.ignore = true;
   style3.ignore = true;
@@ -106,6 +108,7 @@ void load_rects() {
   rects.add(rect_l5);
   rects.add(rect_h3);
   rects.add(rect_h5);
+  rects.add(rect_c);
 }
 
 void load_data() {
@@ -123,7 +126,6 @@ void load_data() {
   no_i3_alist = new ArrayList<String>(Arrays.asList(no_i3));
   half5_alist = new ArrayList<String>(Arrays.asList(half5));
   half3_alist = new ArrayList<String>(Arrays.asList(half3));
-
 }
 
 
