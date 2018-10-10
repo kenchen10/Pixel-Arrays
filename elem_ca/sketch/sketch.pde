@@ -1,5 +1,8 @@
+int start_i = 0;
+int start_j = 0;
+
 void settings() {
-   size(2450, 1300);
+   size(2550, 1300);
 }
 
 void setup() {
@@ -16,6 +19,7 @@ void setup() {
    load_rects();
    background(0);
    line = new int[round(height/(ca.resolution*2)) - round(height/(ca.resolution*3))];
+   ca.total_cells = new ArrayList<int[]>();
 }
 
 void draw() {
@@ -42,7 +46,6 @@ void draw() {
    for (Rect r: rects) {
      r.update();
    }
-   
    if (ca.is_cycle && ca.generation == height/ca.resolution) {
     ca.is_search = false;
     for (int i = 0; i < ca.rule.length; i++) {
@@ -51,7 +54,7 @@ void draw() {
     ca.start_over();
    }
    fill(250, 250, 250);
-   fill(96, 157, 255, 7);
+   fill(96, 157, 255);
    rect(10, 10, width - 20, userTB.H, 5); 
    // DRAW THE TEXTBOXES
    userTB.DRAW();
@@ -73,11 +76,43 @@ void draw() {
    } else if (ca.is_half == false) {
      checkHalf();
    }
+   String str = "";
+     for(int j=0;j<ca.rule.length;j++) {
+        str = str + Integer.toString(ca.rule[j]);
+     }
+   for (int i = 0; i < lines_alist.size(); i++) {
+     if (str.equals(lines_alist.get(i))) {
+     print(lines_alist.get(i)+"\n");}
+   }
+   if (ca.neighbors == 3 && ca.is_half && lines_alist.contains(str)) {
+    half3_alist.remove(str);
+    Object[] o = half3_alist.toArray();
+    String[] temp = Arrays.copyOf(o, o.length, String[].class);
+    half3 = temp;
+    saveStrings("half_3.txt", half3);
+    for (int i = 0; i < ca.rule.length; i++) {
+      ca.rule[i] = half3[1].charAt(i) - '0';
+    }
+    ca.start_over();
+   } else if (ca.neighbors == 5 && ca.is_half && lines5_alist.contains(str)) {
+     half5_alist.remove(str);
+          Object[] o = half5_alist.toArray();
+          String[] temp = Arrays.copyOf(o, o.length, String[].class);
+          half5 = temp;
+          saveStrings("half_5.txt", half5);
+   }
    checkIgnore();
-   ca.render();
-   ca.generate();
+   if (!ca.is_stop) {
+     ca.render();
+     ca.generate();
+   }
    fill(0);
    for (Rect r: rects) {
+     if (r.is_3 && ca.neighbors != 3) {
+       continue;
+     } else if (r.is_5 && ca.neighbors != 5) {
+       continue;
+     }
      r.draw_rect();
    }
    draw_text();
@@ -139,7 +174,7 @@ void checkHalf() {
   }
   if (ca.rand == 0) {
     int count = 0;
-    if (ca.neighbors == 3 && ca.generation == round(height/(ca.resolution*2)) && !half3_alist.contains(str) && !lines_alist.contains(str)) {
+    if (!ca.is_half && ca.neighbors == 3 && ca.generation == round(height/(ca.resolution*2)) && !half3_alist.contains(str) && !lines_alist.contains(str)) {
       for (int i = 1; i < ca.cells.length; i++) {
         if (ca.cells[i] != ca.cells[i-1]) {
           count += 1;
@@ -152,7 +187,7 @@ void checkHalf() {
         half3 = temp;
         saveStrings("half_3.txt", half3);
       }
-    } else if (ca.neighbors == 5 && ca.generation == round(height/(ca.resolution*2)) && !half5_alist.contains(str) && !lines5_alist.contains(str)) {
+    } else if (!ca.is_half && ca.neighbors == 5 && ca.generation == round(height/(ca.resolution*2)) && !half5_alist.contains(str) && !lines5_alist.contains(str)) {
       for (int i = 1; i < ca.cells.length; i++) {
         if (ca.cells[i] != ca.cells[i-1]) {
           count += 1;
@@ -214,11 +249,77 @@ void mousePressed() {
    for (TEXTBOX t : textboxes) {
        t.PRESSED(mouseX, mouseY);
    }
+   for (Rect r: rects) {
+     if (ca.neighbors == 5 && r.is_3) {
+       r.is_on = false;
+     }
+     if (ca.neighbors == 3 && r.is_5) {
+       r.is_on = false;
+     }
+     if (r.is_5 && r.rectOver && !r.is_start) {
+       r.is_on = !r.is_on;
+     }
+   }
    ca.is_res = false;
    if (done_n == false || done_n == true && done_r == false || done_n == true && done_r == true && done_o == false) {
      start_box.PRESSED(mouseX, mouseY);
    }
-   if (rect_c.rectOver && ca.is_cycle) {
+   if (stop.rectOver) {
+     ca.is_stop = !ca.is_stop;
+   }
+   if (start5.rectOver) {
+     ca.is_stop = false;
+     for (int i = 0; i < ca.rule.length; i++) {
+       ca.rule[i] = 0;
+     }
+     for (Rect r: rects) {
+       if (r.is_5 && !r.is_start) {
+         if (r.is_on) {
+           ca.rule[r.v] = 1;
+         }
+       }
+     }
+     ca.start_over();
+   } else if (start3.rectOver) {
+     ca.is_stop = false;
+     for (int i = 0; i < ca.rule.length; i++) {
+       ca.rule[i] = 0;
+     }
+     if (b000.is_on) {
+       ca.rule[0] = 1;
+     } if (b001.is_on) {
+       ca.rule[1] = 1;
+     } if (b010.is_on) {
+       ca.rule[2] = 1;
+     } if (b011.is_on) {
+       ca.rule[3] = 1;
+     } if (b100.is_on) {
+       ca.rule[4] = 1;
+     } if (b101.is_on) {
+       ca.rule[5] = 1;
+     } if (b110.is_on) {
+       ca.rule[6] = 1;
+     } if (b111.is_on) {
+       ca.rule[7] = 1;
+     }
+     ca.start_over();
+   } else if (b000.rectOver) {
+     b000.is_on = !b000.is_on;
+   } else if (b001.rectOver) {
+     b001.is_on = !b001.is_on;
+   } else if (b010.rectOver) {
+     b010.is_on = !b010.is_on;
+   } else if (b011.rectOver) {
+     b011.is_on = !b011.is_on;
+   } else if (b100.rectOver) {
+     b100.is_on = !b100.is_on;
+   } else if (b101.rectOver) {
+     b101.is_on = !b101.is_on;
+   } else if (b110.rectOver) {
+     b110.is_on = !b110.is_on;
+   } else if (b111.rectOver) {
+     b111.is_on = !b111.is_on;
+   } else if (rect_c.rectOver && ca.is_cycle) {
      ca.is_cycle = false;
    } else if (rect_c.rectOver) {
      ca.is_cycle = true;
@@ -231,6 +332,7 @@ void mousePressed() {
     ca.is_line = false;
     ca.start_over();
    } else if (rect_i.rectOver && ca.rule.length == 32 && ca.is_i5) {
+     ca.is_stop = false;
     ca.is_search = false;
     String str = "";
     for (int j=0;j<ca.rule.length;j++) {
@@ -251,6 +353,7 @@ void mousePressed() {
     ca.is_half = false;
     ca.start_over();
   } else if (rect_i.rectOver && ca.rule.length == 8 && ca.is_i3) {
+    ca.is_stop = false;
     ca.is_search = false;
     String str = "";
     for (int j=0;j<ca.rule.length;j++) {
@@ -271,6 +374,7 @@ void mousePressed() {
     ca.is_half = false;
     ca.start_over();
   } else if (rect_i.rectOver && ca.rule.length == 32 && !ca.is_i5 && !ca.is_i3) {
+    ca.is_stop = false;
     ca.is_search = false;
     String str = "";
     for (int j=0;j<ca.rule.length;j++) {
@@ -292,6 +396,7 @@ void mousePressed() {
     saveStrings("data_5.txt", ignore_5);
     ca.start_over();
   } else if (rect_i.rectOver && ca.rule.length == 8 && !ca.is_i5 && !ca.is_i3) {
+    ca.is_stop = false;
     ca.is_search = false;
     String str = "";
     for (int j=0;j<ca.rule.length;j++) {
@@ -313,6 +418,7 @@ void mousePressed() {
     saveStrings("data_3.txt", ignore_3);
     ca.start_over();
   } else if (rect_i5.rectOver && ca.rule.length == 32 && ca.is_i5) {
+    ca.is_stop = false;
     ca.is_search = false;
     rect_i5.currentColor = rect_i5.rectColor;
     ca.is_i5 = false;
@@ -324,6 +430,7 @@ void mousePressed() {
     ca.is_half = false;
     ca.start_over();
   } else if (rect_i5.rectOver) {
+    ca.is_stop = false;
     ca.is_search = false;
     rect_i5.currentColor = rect_i5.rectColor;
     ca.is_i5 = true;
@@ -339,6 +446,7 @@ void mousePressed() {
     ca.neighbors = 5;
     ca.start_over();
   } else if (rect_i3.rectOver && ca.rule.length == 8 && ca.is_i3) {
+    ca.is_stop = false;
     ca.is_search = false;
     rect_i3.currentColor = rect_i3.rectColor;
     ca.is_i3 = false;
@@ -350,6 +458,7 @@ void mousePressed() {
     ca.is_half = false;
     ca.start_over();
   } else if (rect_i3.rectOver) {
+    ca.is_stop = false;
     ca.is_search = false;
     rect_i3.currentColor = rect_i3.rectColor;
     ca.is_i3 = true;
@@ -365,6 +474,7 @@ void mousePressed() {
     ca.neighbors = 3;
     ca.start_over();
   } else if (rect_l3.rectOver) {
+    ca.is_stop = false;
     ca.is_search = false;
     rect_l3.currentColor = rect_l3.rectColor;
     ca.is_i5 = false;
@@ -380,6 +490,7 @@ void mousePressed() {
     ca.neighbors = 3;
     ca.start_over();
   } else if (rect_l5.rectOver) {
+    ca.is_stop = false;
     ca.is_search = false;
     rect_l5.currentColor = rect_l5.rectColor;
     ca.is_i5 = false;
@@ -395,6 +506,7 @@ void mousePressed() {
     ca.neighbors = 5;
     ca.start_over();
   } else if (rect_h3.rectOver) {
+    ca.is_stop = false;
     ca.is_search = false;
     ca.is_i5 = false;
     ca.is_i3 = false;
@@ -408,6 +520,7 @@ void mousePressed() {
     ca.neighbors = 3;
     ca.start_over();
   } else if (rect_h5.rectOver) {
+    ca.is_stop = false;
     ca.is_search = false;
     ca.is_i5 = false;
     ca.is_i3 = false;
@@ -420,6 +533,7 @@ void mousePressed() {
     ca.neighbors = 5;
     ca.start_over();
   } else if (rect_3.rectOver) {
+    ca.is_stop = false;
     ca.is_search = false;
     ca.is_i3 = false;
     ca.is_i5 = false;
@@ -437,6 +551,7 @@ void mousePressed() {
     }
     ca.start_over();
   } else if (rect_5.rectOver) {
+    ca.is_stop = false;
     ca.is_i3 = false;
     ca.is_i5 = false;
     ca.is_search = false;
@@ -454,27 +569,34 @@ void mousePressed() {
     }
     ca.start_over();
   } else if (rect_r.rectOver) {
+    ca.is_stop = false;
     rect_r.currentColor = rect_r.rectColor;
     ca.rand = 0;
     ca.start_over();
   } else if (rect_h.rectOver) {
+    ca.is_stop = false;
     rect_h.currentColor = rect_h.rectColor;
     ca.rand = 1;
     ca.start_over();
   } else if (rect_n2.rectOver) {
+    ca.is_stop = false;
     ca.rand = 2;
     ca.start_over();
   } else if (rect_n3.rectOver) {
+    ca.is_stop = false;
     ca.rand = 3;
     ca.start_over();
   } else if (rect_n4.rectOver) {
+    ca.is_stop = false;
     ca.rand = 4;
     ca.start_over();
   } else if (rect_n5.rectOver) {
+    ca.is_stop = false;
     rect_h.currentColor = rect_h.rectColor;
     ca.rand = 5;
     ca.start_over();
   } else if (rect_n.rectOver && ca.is_half && ca.neighbors == 5) {
+    ca.is_stop = false;
     ca.is_search = false;
     String temp = half5[floor(random(half5.length))];
     for (int i = 0; i < temp.length(); i++) {
@@ -483,6 +605,7 @@ void mousePressed() {
     ca.is_half = true;
     ca.start_over();
   } else if (rect_n.rectOver && ca.is_half && ca.neighbors == 3) {
+    ca.is_stop = false;
     ca.is_search = false;
     String temp = half3[floor(random(half3.length))];
     for (int i = 0; i < temp.length(); i++) {
@@ -491,6 +614,7 @@ void mousePressed() {
     ca.is_half = true;
     ca.start_over();
   } else if (rect_n.rectOver && ca.is_i3) {
+    ca.is_stop = false;
     ca.is_search = false;
     String temp = ignore_3[floor(random(ignore_3.length))];
     for (int i = 0; i < temp.length(); i++) {
@@ -499,6 +623,7 @@ void mousePressed() {
     ca.is_line = false;
     ca.start_over();
   } else if (rect_n.rectOver && ca.is_i5) {
+    ca.is_stop = false;
     ca.is_search = false;
     String temp = ignore_5[floor(random(ignore_5.length))];
     for (int i = 0; i < temp.length(); i++) {
@@ -507,6 +632,7 @@ void mousePressed() {
     ca.is_line = false;
     ca.start_over();
   } else if (rect_n.rectOver && ca.is_line && ca.neighbors == 3) {
+    ca.is_stop = false;
     ca.is_search = false;
     String temp = lines[floor(random(lines.length))];
     for (int i = 0; i < temp.length(); i++) {
@@ -515,6 +641,7 @@ void mousePressed() {
     ca.is_line = true;
     ca.start_over();
   } else if (rect_n.rectOver && ca.is_line && ca.neighbors == 5) {
+    ca.is_stop = false;
     ca.is_search = false;
     String temp = lines5[floor(random(lines5.length))];
     for (int i = 0; i < temp.length(); i++) {
@@ -523,6 +650,7 @@ void mousePressed() {
     ca.is_line = true;
     ca.start_over();
   } else if (rect_n.rectOver) {
+    ca.is_stop = false;
     ca.is_search = false;
     rect_n.currentColor = rect_n.rectColor;
     for (int i = 0; i < ca.rule.length; i++) {
@@ -557,7 +685,7 @@ void keyPressed() {
         }
         ca.is_line = false;
         ca.is_half = false;
-        ca.start_over();
+        //ca.start_over();
         done_n = true;
         start_box.Text = "";
      } else if (key == '\n' && int(start_box.Text) == 5) {
@@ -575,7 +703,7 @@ void keyPressed() {
         }
       }
       ca.is_line = false;
-      ca.start_over();
+      //ca.start_over();
       done_n = true;
       start_box.Text = "";
      }
@@ -599,7 +727,7 @@ void keyPressed() {
     start_box.Text = "";
     start_box.TextLength = 0;
     done_r = true;
-    ca.start_over();
+    //ca.start_over();
    } else if (key == '\n' && done_n == true && done_r == false && start_box.Text.length() == 8 && (start_box.Text.toUpperCase().matches("[A-F0-9]+"))) {
     background(0);
     String temp = new BigInteger(start_box.Text, 16).toString(2);
@@ -620,7 +748,7 @@ void keyPressed() {
     start_box.Text = "";
     start_box.TextLength = 0;
     done_r = true;
-    ca.start_over();
+    //ca.start_over();
    } else if (key == '\n' && done_n == true && done_r == true && done_o == false && start_box.Text.length() == 1 && int(start_box.Text) >= 0 && int(start_box.Text) < 6) {
      ca.rand = int(start_box.Text);
      ca.start_over();
@@ -628,16 +756,16 @@ void keyPressed() {
      start_box.TextLength = 0;
      done_o = true;
    } else if (key == '\n' && tb2.Text.length() > 0 && tb2.Text.length() < 3 && int(tb2.Text) > 0 && int(tb2.Text) < 70) {
-    background(0);
+    background(255);
     ca.resolution = int(tb2.Text);
-    ca.cells = new int[width/ca.resolution];
+    ca.cells = new int[width/ca.resolution - width/(ca.resolution * 4)];
     ca.start_over();
     ca.is_search = false;
     tb2.Text = "";
     tb2.TextLength = 0;
     ca.is_res = true;
   } else if (key == '\n' && userTB.Text.length() == 2 && (userTB.Text.toUpperCase().matches("[A-F0-9]+"))) {
-    background(0);
+    background(255);
     String temp = new BigInteger(userTB.Text, 16).toString(2);
     Integer length = temp.length();
     if (length < 8) {
@@ -660,7 +788,7 @@ void keyPressed() {
     userTB.TextLength = 0;
     ca.start_over();
   } else if (key == '\n' && userTB.Text.length() == 8 && (userTB.Text.toUpperCase().matches("[A-F0-9]+"))) {
-    background(0);
+    background(255);
     ca.is_search = true;
     ca.is_i3 = false;
     ca.is_half = false;
@@ -683,67 +811,4 @@ void keyPressed() {
     userTB.TextLength = 0;
     ca.start_over();
   }
-}
-
-void draw_text() {
-  String[] str_rule = new String[8];
-  if (ca.neighbors == 3) {
-    str_rule = new String[8];
-    for (int i = 0; i < ca.rule.length; i++) {
-        str_rule[i] = str(ca.rule[i]);
-    }
-  } else if (ca.neighbors == 5) {
-    str_rule = new String[32];
-    for (int i = 0; i < ca.rule.length; i++) {
-        str_rule[i] = str(ca.rule[i]);
-    }
-  } if (ca.rand == 0) {
-    textSize(20);
-    fill(255);
-    text("Random Rule", width / 4 + 160, userTB.Y + 24);
-  } else if (ca.rand >= 1 && ca.rand <= 5) {
-    textSize(20);
-    fill(255);
-    text("Non-random Rule " + ca.rand, width / 4 + 160, userTB.Y + 24);
-  } if (ca.is_i3 == true) {
-    textSize(20);
-    fill(255);
-    text("Ignore 3", width / 4 + 350, userTB.Y + 24);
-  } else if (ca.is_i5 == true) {
-    textSize(20);
-    fill(255);
-    text("Ignore 5", width / 4 + 350, userTB.Y + 24);
-  } else if (ca.is_half == true && percent != 0) {
-    textSize(20);
-    fill(255);
-    text(percent*100 +"% checkers", width / 4 + 350, userTB.Y + 24);
-  } if (ca.is_half == true) {
-    textSize(20);
-    fill(255);
-    text("checkerboard", width / 4 + 900, userTB.Y + 24);
-  }
-  String t = join(str_rule, "");
-  t = t.replaceAll("....", "$0 ");
-  textSize(20);
-  fill(255);
-  text("Rule: " + t, 20, userTB.Y + 24);
-  text("Hex Input: ", width - 570, userTB.Y + 24);
-  text(ca.neighbors + " Neighbors", width / 2, userTB.Y + 24);
-  text("3", rect_3.rectX + rect_3.rectW/2 - 7, rect_3.rectY+rect_3.rectH/2 + 5);
-  text("5", rect_5.rectX + rect_5.rectW/2 - 7, rect_5.rectY+rect_5.rectH/2 + 5);
-  text("r", rect_r.rectX + rect_r.rectW/2 - 7, rect_r.rectY+rect_r.rectH/2 + 5);
-  text("h", rect_h.rectX + rect_h.rectW/2 - 7, rect_h.rectY+rect_h.rectH/2 + 5);
-  text("n", rect_n.rectX + rect_n.rectW/2 - 7, rect_n.rectY+rect_n.rectH/2 + 5);
-  text("i3", rect_i3.rectX + rect_i3.rectW/2 - 7, rect_i3.rectY+rect_i3.rectH/2 + 5);
-  text("i5", rect_i5.rectX + rect_i5.rectW/2 - 7, rect_i5.rectY+rect_i5.rectH/2 + 5);
-  text("i", rect_i.rectX + rect_i.rectW/2 - 7, rect_i.rectY+rect_i.rectH/2 + 5);
-  text("n2", rect_n2.rectX + rect_n2.rectW/2 - 10, rect_n2.rectY+rect_n2.rectH/2 + 5);
-  text("n3", rect_n3.rectX + rect_n3.rectW/2 - 10, rect_n3.rectY+rect_n3.rectH/2 + 5);
-  text("n4", rect_n4.rectX + rect_n4.rectW/2 - 10, rect_n4.rectY+rect_n4.rectH/2 + 5);
-  text("n5", rect_n5.rectX + rect_n5.rectW/2 - 10, rect_n5.rectY+rect_n5.rectH/2 + 5);
-  text("l3", rect_l3.rectX + rect_l3.rectW/2 - 10, rect_l3.rectY+rect_l3.rectH/2 + 5);
-  text("l5", rect_l5.rectX + rect_l5.rectW/2 - 10, rect_l5.rectY+rect_l5.rectH/2 + 5);
-  text("h3", rect_h3.rectX + rect_h3.rectW/2 - 10, rect_h3.rectY+rect_h3.rectH/2 + 5);
-  text("h5", rect_h5.rectX + rect_h5.rectW/2 - 10, rect_h5.rectY+rect_h5.rectH/2 + 5);
-  text("c", rect_c.rectX + rect_c.rectW/2 - 10, rect_c.rectY+rect_c.rectH/2 + 5);
 }

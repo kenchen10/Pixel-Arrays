@@ -7,6 +7,11 @@ class Rect {
   color currentColor;
   boolean rectOver = false;
   boolean ignore = false;
+  boolean is_3 = false;
+  boolean is_on = false;
+  boolean is_5 = false;
+  int v;
+  boolean is_start = false;
   
   Rect (int x, int y, int w, int ht, color c, color b, color h, color curr, boolean over) {
     rectX = x;
@@ -21,11 +26,18 @@ class Rect {
   }
   
   void draw_rect() {
-    currentColor = rectColor;
-    fill(currentColor, 7);
-    noStroke();
-    rect(rectX, rectY, rectW, rectH, 5); 
+    if (is_on) {
+      fill(10, 255, 10);
+      noStroke();
+      rect(rectX, rectY, rectW, rectH, 5); 
     }
+    else {
+      currentColor = rectColor;
+      fill(currentColor);
+      noStroke();
+      rect(rectX, rectY, rectW, rectH, 5); 
+    }
+  }
     
   boolean overRect(int x, int y, int w, int h)  {
     if (mouseX >= x && mouseX <= x+w && 
