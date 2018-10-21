@@ -81,8 +81,10 @@ void draw() {
         str = str + Integer.toString(ca.rule[j]);
      }
    for (int i = 0; i < lines_alist.size(); i++) {
-     if (str.equals(lines_alist.get(i))) {
-     print(lines_alist.get(i)+"\n");}
+     if (ca.neighbors == 3 && ca.is_half && str.equals(lines_alist.get(i))) {
+     
+     }
+     
    }
    if (ca.neighbors == 3 && ca.is_half && lines_alist.contains(str)) {
     half3_alist.remove(str);
@@ -102,10 +104,10 @@ void draw() {
           saveStrings("half_5.txt", half5);
    }
    checkIgnore();
-   if (!ca.is_stop) {
-     ca.render();
-     ca.generate();
-   }
+   
+   ca.render();
+   ca.generate();
+   
    fill(0);
    for (Rect r: rects) {
      if (r.is_3 && ca.neighbors != 3) {
@@ -205,12 +207,12 @@ void checkHalf() {
 }
 
 void checkIgnore() {
-  if (!ca.is_search && !ca.is_line && !ca.is_res && !ca.is_half && !ca.is_cycle) {
-    if (ca.neighbors == 3 && !ca.is_i3) {
-      String str = "";
+  String str = "";
          for(int j=0;j<ca.rule.length;j++) {
             str = str + Integer.toString(ca.rule[j]);
          }
+  if (!ca.is_search && !ca.is_line && !ca.is_res && !ca.is_half && !ca.is_cycle && !ca.is_stop) {
+    if (ca.neighbors == 3 && !ca.is_i3) {
       if (i3_alist.contains(str)) {
         if (no_i3_alist.contains(str)) {
           no_i3_alist.remove(str);
@@ -231,10 +233,6 @@ void checkIgnore() {
         saveStrings("no_i.txt", no_i3);
       }
    } else if (ca.neighbors == 5 && !ca.is_i5 && !ca.is_res) {
-     String str = "";
-         for(int j=0;j<ca.rule.length;j++) {
-            str = str + Integer.toString(ca.rule[j]);
-         }
       if (i5_alist.contains(str)) {
         for (int j = 0; j < 32; j++) {
               ca.rule[j] = floor(random(2));
@@ -266,6 +264,7 @@ void mousePressed() {
    }
    if (stop.rectOver) {
      ca.is_stop = !ca.is_stop;
+     ca.is_search = true;
    }
    if (start5.rectOver) {
      ca.is_stop = false;

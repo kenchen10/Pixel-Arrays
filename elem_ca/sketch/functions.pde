@@ -19,6 +19,7 @@ int[] line;
 String[] lines5;
 String[] half3;
 String[] half5;
+String[] all_3;
 
 ArrayList<String> i3_alist;
 ArrayList<String> no_i3_alist;
@@ -27,7 +28,7 @@ ArrayList<String> lines_alist;
 ArrayList<String> lines5_alist;
 ArrayList<String> half3_alist;
 ArrayList<String> half5_alist;
-
+ArrayList<String> all3_alist;
 
 boolean done_n = false;
 boolean done_r = false;
@@ -320,6 +321,15 @@ void load_rects() {
   b32.v = 31;
   start3.is_start = true;
   start5.is_start = true;
+  
+  b000.v = 0;
+  b001.v = 1;
+  b010.v = 2;
+  b011.v = 3;
+  b100.v = 4;
+  b101.v = 5;
+  b110.v = 6;
+  b111.v = 7;
 }
 
 void load_data() {
@@ -330,6 +340,7 @@ void load_data() {
   lines = loadStrings("lines.txt");
   lines5 = loadStrings("lines5.txt");
   no_i3 = loadStrings("no_i.txt");
+  all_3 = loadStrings("all_3.txt");
   i3_alist = new ArrayList<String>(Arrays.asList(ignore_3));
   lines_alist = new ArrayList<String>(Arrays.asList(lines));
   lines5_alist = new ArrayList<String>(Arrays.asList(lines5));
@@ -337,6 +348,7 @@ void load_data() {
   no_i3_alist = new ArrayList<String>(Arrays.asList(no_i3));
   half5_alist = new ArrayList<String>(Arrays.asList(half5));
   half3_alist = new ArrayList<String>(Arrays.asList(half3));
+  all3_alist = new ArrayList<String>(Arrays.asList(all_3));
 }
 
 

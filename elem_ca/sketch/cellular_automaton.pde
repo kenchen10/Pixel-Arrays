@@ -132,7 +132,7 @@ class CA {
           cells[i] = next[i];
         }
       }
-      if (generation == height/resolution) {
+      if (generation >= height/resolution && is_stop) {
         generation = 0;
       } else {
         generation += 1;
